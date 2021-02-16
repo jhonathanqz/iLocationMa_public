@@ -1,0 +1,21 @@
+name: core
+description: Core dependencies to share amongst the application
+
+publish_to: "none"
+
+version: 0.0.1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+  package_info: ^0.4.0+14
+  url_launcher: ^5.7.10
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
