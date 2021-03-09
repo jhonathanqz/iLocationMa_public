@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ilocationma/add/add_hospital.dart';
-import 'package:ilocationma/home/HomeEscolha.dart';
 import 'package:ilocationma/home/HomePrincipal.dart';
 import 'package:ilocationma/home/OpenUtil.dart';
 import 'package:ilocationma/modelsfunc/user_model.dart';
@@ -29,14 +28,12 @@ class MyMapaHospital extends StatelessWidget {
   }
 }
 
-
 class MapaHospital extends StatefulWidget {
   @override
   MapaHospitalState createState() => MapaHospitalState();
 }
 
 class MapaHospitalState extends State<MapaHospital> {
-
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -45,7 +42,6 @@ class MapaHospitalState extends State<MapaHospital> {
   final Map<String, Marker> _markers = {};
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
-
     var db = FirebaseFirestore.instance;
     QuerySnapshot resultado = await db.collection("markershosp").get();
 
@@ -62,14 +58,11 @@ class MapaHospitalState extends State<MapaHospital> {
             infoWindow: InfoWindow(
                 title: result.name,
                 snippet: result.address,
-                onTap: (){
+                onTap: () {
                   OpenUtil.openMap(result.lat, result.lng);
-
-                }
-            ),
+                }),
             icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueBlue)
-        );
+                BitmapDescriptor.hueBlue));
         _markers[result.name] = marker;
       });
     });
@@ -79,64 +72,58 @@ class MapaHospitalState extends State<MapaHospital> {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<UserModel>(
-        builder: (context, child, model) {
-          return Scaffold(
-            key: _scaffoldKey,
-            appBar: AppBar(
-              flexibleSpace: AppBarGradient3(),
-              leading: IconButton(
-                icon: Icon(FontAwesomeIcons.arrowLeft),
+    return ScopedModelDescendant<UserModel>(builder: (context, child, model) {
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          flexibleSpace: AppBarGradient3(),
+          leading: IconButton(
+            icon: Icon(FontAwesomeIcons.arrowLeft),
+            onPressed: () {
+              Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => MyHomePrincipal()));
+            },
+          ),
+          title: Text("Hospital"),
+          centerTitle: true,
+          actions: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: IconButton(
+                icon: Icon(Icons.add_circle),
+                iconSize: 23,
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => MyHomePrincipal()
-                  ));
-
+                  setState(() {
+                    model.verificaLoginMapa(context, MyAddHospital());
+                  });
                 },
               ),
-              title: Text("Hospital"),
-              centerTitle: true,
-              actions: <Widget>[
-                Padding(padding: EdgeInsets.symmetric(horizontal: 15),
-                  child: IconButton(
-                    icon: Icon(Icons.add_circle),
-                    iconSize: 23,
-                    onPressed: () {
-                      setState(() {
-                        model.verificaLoginMapa(context, MyAddHospital());
-                      });
-
-                    },
-                  ),),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: IconButton(
-                    icon: Icon(FontAwesomeIcons.syncAlt),
-                    iconSize: 20,
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => MapaHospital()
-                      ));
-
-                    },
-                  ),
-                ),
-
-              ],
-
             ),
-            body: Stack(
-              children: <Widget>[
-                _buildGoogleMap(context),
-                _buildContainer(),
-              ],
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: IconButton(
+                icon: Icon(FontAwesomeIcons.syncAlt),
+                iconSize: 20,
+                onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => MapaHospital()));
+                },
+              ),
             ),
-
-          );
+          ],
+        ),
+        body: Stack(
+          children: <Widget>[
+            _buildGoogleMap(context),
+            _buildContainer(),
+          ],
+        ),
+      );
     });
   }
 
-  Widget _containerCard(String _image, double lat, double lng, String restaurantName){
+  Widget _containerCard(
+      String _image, double lat, double lng, String restaurantName) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5),
       child: _boxes(_image, lat, lng, restaurantName),
@@ -152,15 +139,20 @@ class MapaHospitalState extends State<MapaHospital> {
         child: ListView(
           scrollDirection: Axis.horizontal,
           children: <Widget>[
-            _containerCard("https://sengece.org.br/wp-content/uploads/2020/04/unimed-logo-1-2.png",
-                -21.264381, -48.5003027,
+            _containerCard(
+                "https://sengece.org.br/wp-content/uploads/2020/04/unimed-logo-1-2.png",
+                -21.264381,
+                -48.5003027,
                 "Unimed"),
-            _containerCard("https://www.hospitalmatao.com.br/wp-content/uploads/2018/11/sistema_vida.png",
-                -21.2654096, -48.5021581,
+            _containerCard(
+                "https://www.hospitalmatao.com.br/wp-content/uploads/2018/11/sistema_vida.png",
+                -21.2654096,
+                -48.5021581,
                 "Sta Casa M. Alto"),
-
-            _containerCard("https://www.hospitaldecruzilia.com.br/site/images/hospital/prontosocorro.jpg",
-                -21.2645631, -48.5020836,
+            _containerCard(
+                "https://www.hospitaldecruzilia.com.br/site/images/hospital/prontosocorro.jpg",
+                -21.2645631,
+                -48.5020836,
                 "Pronto Socorro Municipal"),
           ],
         ),
@@ -193,7 +185,11 @@ class MapaHospitalState extends State<MapaHospital> {
                         fit: BoxFit.fill,
                         image: NetworkImage(_image),
                         loadingBuilder: (context, child, progress) {
-                          return progress == null ? child: CircularProgressIndicator(backgroundColor: Colors.blue,);
+                          return progress == null
+                              ? child
+                              : CircularProgressIndicator(
+                                  backgroundColor: Colors.blue,
+                                );
                         },
                       ),
                     ),
@@ -210,7 +206,8 @@ class MapaHospitalState extends State<MapaHospital> {
       ),
     );
   }
-  Widget _containerStars(){
+
+  Widget _containerStars() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5),
       child: Icon(
@@ -229,55 +226,54 @@ class MapaHospitalState extends State<MapaHospital> {
           padding: const EdgeInsets.only(left: 8.0),
           child: Container(
               child: Text(
-                restaurantName,
-                style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold),
-              )),
+            restaurantName,
+            style: TextStyle(
+                color: Colors.blue,
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold),
+          )),
         ),
         SizedBox(height: 5.0),
         Container(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Container(
-                    child: Text(
-                      "4.1",
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 18.0,
-                      ),
-                    )),
-                SizedBox(
-                  width: 5,
-                ),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-
-              ],
-            )),
-        SizedBox(height: 5.0),
-        Container(
-            child: Text(
-              "Brasil",
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Container(
+                child: Text(
+              "4.1",
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 18.0,
               ),
             )),
+            SizedBox(
+              width: 5,
+            ),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+          ],
+        )),
         SizedBox(height: 5.0),
         Container(
             child: Text(
-              "Monte Alto, SP",
-              style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold),
-            )),
+          "Brasil",
+          style: TextStyle(
+            color: Colors.black54,
+            fontSize: 18.0,
+          ),
+        )),
+        SizedBox(height: 5.0),
+        Container(
+            child: Text(
+          "Monte Alto, SP",
+          style: TextStyle(
+              color: Colors.black54,
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold),
+        )),
       ],
     );
   }
@@ -290,7 +286,7 @@ class MapaHospitalState extends State<MapaHospital> {
         mapType: MapType.normal,
         myLocationEnabled: true,
         initialCameraPosition:
-        CameraPosition(target: LatLng(-21.2621781, -48.4975432), zoom: 13),
+            CameraPosition(target: LatLng(-21.2621781, -48.4975432), zoom: 13),
         onMapCreated: _onMapCreated,
         markers: _markers.values.toSet(),
       ),

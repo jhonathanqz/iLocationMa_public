@@ -7,7 +7,6 @@ import '../mapa_turismo.dart';
 import '../mapa_turismo_ecoturismo.dart';
 import '../mapa_turismo_religioso.dart';
 
-
 void main() => runApp(MyHomeMapTur());
 
 class MyHomeMapTur extends StatelessWidget {
@@ -27,7 +26,6 @@ class HomeMapTur extends StatefulWidget {
 }
 
 class _HomeMapTurState extends State<HomeMapTur> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,31 +42,29 @@ class _HomeMapTurState extends State<HomeMapTur> {
                   color: Colors.white,
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => MyHomePrincipal()
-                    ));
+                        builder: (context) => MyHomePrincipal()));
                   },
                 ),
-
               ],
             ),
           ),
           SizedBox(height: 25.0),
-          FadeAnimation(1,
+          FadeAnimation(
+            1,
             Padding(
               padding: EdgeInsets.only(left: 40.0),
               child: Row(
                 children: <Widget>[
-                  Text('iLocationMA' ,
+                  Text('iLocationMA',
                       style: TextStyle(
                           fontFamily: 'Montserrat',
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 25.0)),
-
                 ],
               ),
-
-            ),),
+            ),
+          ),
           SizedBox(height: 40.0),
           Container(
             height: MediaQuery.of(context).size.height - 185.0,
@@ -82,46 +78,52 @@ class _HomeMapTurState extends State<HomeMapTur> {
               children: <Widget>[
                 Column(
                   children: [
-                    FadeAnimation(1, Container(
-                        width: MediaQuery.of(context).size.width,
-
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Text(
-                              "Selecione abaixo, qual opção de turismo você procura.",style: TextStyle(
-                                fontSize: 18,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.black),
-                            textAlign: TextAlign.justify,
-                          ),
-                        )),),
-
-                    SizedBox(height: 25,),
-
-
-                    _flatButton(FontAwesomeIcons.mapMarker, "Turismo Local", MapaTurismo()),
-
-                    SizedBox(height: 20,),
-
-                    _flatButton(FontAwesomeIcons.prayingHands, "Turismo Religioso", MapaTurismoReligioso()),
-
-                    SizedBox(height: 20,),
-
-                    _flatButton(FontAwesomeIcons.pagelines, "Ecoturismo", MapaTurismoEcoturismo()),
-
-                    FadeAnimation(2, Container(
-                      margin: EdgeInsets.only(top: 50, bottom: 50),
-                      height: 300,
-                      width: 400,
-                      child: PageView(
-                        children: <Widget>[
-                          _img("assets/dinossauro5.jpg"),
-                        ],
+                    FadeAnimation(
+                      1,
+                      Container(
+                          width: MediaQuery.of(context).size.width,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                              "Selecione abaixo, qual opção de turismo você procura.",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black),
+                              textAlign: TextAlign.justify,
+                            ),
+                          )),
+                    ),
+                    SizedBox(
+                      height: 25,
+                    ),
+                    _flatButton(FontAwesomeIcons.mapMarker, "Turismo Local",
+                        MapaTurismo()),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    _flatButton(FontAwesomeIcons.prayingHands,
+                        "Turismo Religioso", MapaTurismoReligioso()),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    _flatButton(FontAwesomeIcons.pagelines, "Ecoturismo",
+                        MapaTurismoEcoturismo()),
+                    FadeAnimation(
+                      2,
+                      Container(
+                        margin: EdgeInsets.only(top: 50, bottom: 50),
+                        height: 300,
+                        width: 400,
+                        child: PageView(
+                          children: <Widget>[
+                            _img("assets/dinossauro5.jpg"),
+                          ],
+                        ),
                       ),
-                    ),),
+                    ),
                   ],
                 )
-
               ],
             ),
           )
@@ -131,50 +133,49 @@ class _HomeMapTurState extends State<HomeMapTur> {
   }
 
   Widget _flatButton(FontAwesomeIcons, _text, controller) {
-    return FadeAnimation(2, FlatButton(
-        child: Container(
-          margin: EdgeInsets.all(0),
-          width: MediaQuery.of(context).size.width,
-          height: 50,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              gradient: LinearGradient(colors: <Color>[
-                Colors.blue[900],
-                Colors.blue[600],
-              ])),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(
-                width: 20,
-              ),
-              Icon(
-                FontAwesomeIcons,
-                color: Colors.white,
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              Text(
-                _text,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-            ],
+    return FadeAnimation(
+      2,
+      FlatButton(
+          child: Container(
+            margin: EdgeInsets.all(0),
+            width: MediaQuery.of(context).size.width,
+            height: 50,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                gradient: LinearGradient(colors: <Color>[
+                  Colors.blue[900],
+                  Colors.blue[600],
+                ])),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(
+                  width: 20,
+                ),
+                Icon(
+                  FontAwesomeIcons,
+                  color: Colors.white,
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Text(
+                  _text,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
-        ),
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => controller
-          ));
-
-        }
-
-    ),);
+          onPressed: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => controller));
+          }),
+    );
   }
 
   _img(String img) {
@@ -183,6 +184,4 @@ class _HomeMapTurState extends State<HomeMapTur> {
       fit: BoxFit.fill,
     );
   }
-
-
 }

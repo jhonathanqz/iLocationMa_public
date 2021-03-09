@@ -3,11 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ilocationma/Animation/FadeAnimation.dart';
 import 'package:ilocationma/QRCode/HomeQRCode.dart';
-import 'package:ilocationma/QRCode/scan.dart';
-import 'package:ilocationma/home/HomePrincipal.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'generate.dart';
-
 
 void main() => runApp(MyScanQRCode());
 
@@ -45,22 +41,21 @@ class _ScanQRCodeState extends State<ScanQRCode> {
                   icon: Icon(Icons.arrow_back_ios),
                   color: Colors.white,
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => MyHomeQR()
-                    ));
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => MyHomeQR()));
                   },
                 ),
-
               ],
             ),
           ),
           SizedBox(height: 25.0),
-          FadeAnimation(1,
+          FadeAnimation(
+            1,
             Padding(
               padding: EdgeInsets.only(left: 40.0),
               child: Row(
                 children: <Widget>[
-                  Text('iLocationMA' ,
+                  Text('iLocationMA',
                       style: TextStyle(
                           fontFamily: 'Montserrat',
                           color: Colors.white,
@@ -68,10 +63,13 @@ class _ScanQRCodeState extends State<ScanQRCode> {
                           fontSize: 25.0)),
                 ],
               ),
-
-            ),),
-          SizedBox(height: 10,),
-          FadeAnimation(1,
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          FadeAnimation(
+            1,
             Padding(
               padding: EdgeInsets.only(left: 40.0),
               child: Row(
@@ -83,8 +81,8 @@ class _ScanQRCodeState extends State<ScanQRCode> {
                           fontSize: 20.0))
                 ],
               ),
-
-            ),),
+            ),
+          ),
           SizedBox(height: 40.0),
           Container(
             height: MediaQuery.of(context).size.height - 185.0,
@@ -96,23 +94,25 @@ class _ScanQRCodeState extends State<ScanQRCode> {
               primary: false,
               padding: EdgeInsets.all(16),
               children: <Widget>[
-
-                Padding(padding: EdgeInsets.only(top: 10,bottom: 30,left: 35),
+                Padding(
+                  padding: EdgeInsets.only(top: 10, bottom: 30, left: 35),
                   child: Column(
                     children: <Widget>[
                       Text(
                         "Resultado",
-                        style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 25.0, fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: 15,),
-                      FlatButton(onPressed: () {
-                        if (qrCodeResult.contains("http")){
-                          launch("$qrCodeResult");
-                        }else{
-
-                        }
-                      },
+                      SizedBox(
+                        height: 15,
+                      ),
+                      FlatButton(
+                        onPressed: () {
+                          if (qrCodeResult.contains("http")) {
+                            launch("$qrCodeResult");
+                          } else {}
+                        },
                         child: Text(
                           qrCodeResult,
                           style: TextStyle(
@@ -124,30 +124,29 @@ class _ScanQRCodeState extends State<ScanQRCode> {
                       SizedBox(
                         height: 20.0,
                       ),
-
-
                       FlatButton(
                         padding: EdgeInsets.all(15.0),
                         onPressed: () async {
-
-                          String codeSanner = await BarcodeScanner.scan();    //barcode scnner
+                          String codeSanner =
+                              await BarcodeScanner.scan(); //barcode scnner
                           setState(() {
                             qrCodeResult = codeSanner;
                           });
-
                         },
                         child: Text(
                           "Abrir Scanner",
-                          style:
-                          TextStyle(color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 17),
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17),
                         ),
                         shape: RoundedRectangleBorder(
                             side: BorderSide(color: Colors.blue, width: 3.0),
                             borderRadius: BorderRadius.circular(20.0)),
                       ),
                     ],
-                  ),),
-
+                  ),
+                ),
               ],
             ),
           )
@@ -155,5 +154,4 @@ class _ScanQRCodeState extends State<ScanQRCode> {
       ),
     );
   }
-
 }

@@ -1,12 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ilocationma/Animation/FadeAnimation.dart';
-import 'package:ilocationma/QRCode/scan.dart';
-import 'package:ilocationma/home/HomePrincipal.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'HomeQRCode.dart';
-import 'generate.dart';
-
 
 void main() => runApp(MyGerarQRCode());
 
@@ -27,9 +23,7 @@ class GerarQRCode extends StatefulWidget {
 }
 
 class _GerarQRCodeState extends State<GerarQRCode> {
-
-  String qrData =
-      "https://www.google.com";
+  String qrData = "https://www.google.com";
 
   @override
   Widget build(BuildContext context) {
@@ -46,22 +40,21 @@ class _GerarQRCodeState extends State<GerarQRCode> {
                   icon: Icon(Icons.arrow_back_ios),
                   color: Colors.white,
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => MyHomeQR()
-                    ));
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => MyHomeQR()));
                   },
                 ),
-
               ],
             ),
           ),
           SizedBox(height: 25.0),
-          FadeAnimation(1,
+          FadeAnimation(
+            1,
             Padding(
               padding: EdgeInsets.only(left: 40.0),
               child: Row(
                 children: <Widget>[
-                  Text('iLocationMA' ,
+                  Text('iLocationMA',
                       style: TextStyle(
                           fontFamily: 'Montserrat',
                           color: Colors.white,
@@ -69,10 +62,13 @@ class _GerarQRCodeState extends State<GerarQRCode> {
                           fontSize: 25.0)),
                 ],
               ),
-
-            ),),
-          SizedBox(height: 10,),
-          FadeAnimation(1,
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          FadeAnimation(
+            1,
             Padding(
               padding: EdgeInsets.only(left: 40.0),
               child: Row(
@@ -84,8 +80,8 @@ class _GerarQRCodeState extends State<GerarQRCode> {
                           fontSize: 20.0))
                 ],
               ),
-
-            ),),
+            ),
+          ),
           SizedBox(height: 40.0),
           Container(
             height: MediaQuery.of(context).size.height - 185.0,
@@ -97,8 +93,8 @@ class _GerarQRCodeState extends State<GerarQRCode> {
               primary: false,
               padding: EdgeInsets.all(16),
               children: <Widget>[
-
-                Padding(padding: EdgeInsets.only(top: 10,bottom: 30,left: 35),
+                Padding(
+                  padding: EdgeInsets.only(top: 10, bottom: 30, left: 35),
                   child: Column(
                     children: <Widget>[
                       QrImage(
@@ -123,8 +119,8 @@ class _GerarQRCodeState extends State<GerarQRCode> {
                         child: FlatButton(
                           padding: EdgeInsets.all(15.0),
                           onPressed: () async {
-
-                            if (qrdataFeed.text.isEmpty) {        //a little validation for the textfield
+                            if (qrdataFeed.text.isEmpty) {
+                              //a little validation for the textfield
                               setState(() {
                                 qrData = "";
                               });
@@ -133,12 +129,13 @@ class _GerarQRCodeState extends State<GerarQRCode> {
                                 qrData = qrdataFeed.text;
                               });
                             }
-
                           },
                           child: Text(
                             "Gerar QR Code",
                             style: TextStyle(
-                                color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 20),
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
                           ),
                           shape: RoundedRectangleBorder(
                               side: BorderSide(color: Colors.blue, width: 3.0),
@@ -146,8 +143,8 @@ class _GerarQRCodeState extends State<GerarQRCode> {
                         ),
                       )
                     ],
-                  ),),
-
+                  ),
+                ),
               ],
             ),
           )
@@ -155,6 +152,6 @@ class _GerarQRCodeState extends State<GerarQRCode> {
       ),
     );
   }
-  final qrdataFeed = TextEditingController();
 
+  final qrdataFeed = TextEditingController();
 }

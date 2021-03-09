@@ -6,14 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ilocationma/add/add_banheiro.dart';
-import 'package:ilocationma/home/HomeEscolha.dart';
 import 'package:ilocationma/home/HomePrincipal.dart';
 import 'package:ilocationma/home/OpenUtil.dart';
 import 'package:ilocationma/main.dart';
 import 'package:ilocationma/modelsfunc/user_model.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'mapa_bancos.dart';
 
 import '../widget.dart';
 
@@ -31,23 +29,21 @@ class MyMapaBanheiro extends StatelessWidget {
   }
 }
 
-
 class MapaBanheiro extends StatefulWidget {
   @override
   MapaBanheiroState createState() => MapaBanheiroState();
 }
 
 class MapaBanheiroState extends State<MapaBanheiro> {
-
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Completer<GoogleMapController> _controller = Completer();
 
   final Map<String, Marker> _markers = {};
+  final Map<String, Widget> _markersCont = {};
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
-
     var db = FirebaseFirestore.instance;
     QuerySnapshot resultado = await db.collection("markersbanh").get();
 
@@ -64,15 +60,22 @@ class MapaBanheiroState extends State<MapaBanheiro> {
             infoWindow: InfoWindow(
                 title: result.name,
                 snippet: result.address,
-                onTap: (){
+                onTap: () {
                   OpenUtil.openMap(result.lat, result.lng);
-
-                }
-            ),
+                }),
             icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueViolet)
+                BitmapDescriptor.hueViolet));
+
+        final contCard = containerCard(
+          result.url,
+          result.lat,
+          result.lng,
+          result.name,
         );
+
         _markers[result.name] = marker;
+
+        _markersCont[result.name] = contCard;
       });
     });
   }
@@ -81,66 +84,58 @@ class MapaBanheiroState extends State<MapaBanheiro> {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<UserModel>(
-        builder: (context, child, model) {
-          return Scaffold(
-            key: _scaffoldKey,
-            appBar: AppBar(
-              flexibleSpace: AppBarGradient3(),
-              leading: IconButton(
-                icon: Icon(FontAwesomeIcons.arrowLeft),
+    return ScopedModelDescendant<UserModel>(builder: (context, child, model) {
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          flexibleSpace: AppBarGradient3(),
+          leading: IconButton(
+            icon: Icon(FontAwesomeIcons.arrowLeft),
+            onPressed: () {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => MyHomePrincipal()));
+            },
+          ),
+          title: Text("Banheiros"),
+          centerTitle: true,
+          actions: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: IconButton(
+                icon: Icon(Icons.add_circle),
+                iconSize: 23,
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => MyHomePrincipal()
-                  ));
-
+                  setState(() {
+                    model.verificaLoginMapa(context, MyAddBanheiro());
+                  });
                 },
               ),
-              title: Text("Banheiros"),
-              centerTitle: true,
-              actions: <Widget>[
-                Padding(padding: EdgeInsets.symmetric(horizontal: 15),
-                  child: IconButton(
-                    icon: Icon(Icons.add_circle),
-                    iconSize: 23,
-                    onPressed: () {
-                      setState(() {
-                        model.verificaLoginMapa(context, MyAddBanheiro());
-                      });
-
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: IconButton(
-                    icon: Icon(FontAwesomeIcons.syncAlt),
-                    iconSize: 20,
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => MapaBanheiro()
-                      ));
-
-                    },
-                  ),
-                ),
-
-
-
-              ],
-
             ),
-            body: Stack(
-              children: <Widget>[
-                _buildGoogleMap(context),
-                _buildContainer(),
-              ],
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: IconButton(
+                icon: Icon(FontAwesomeIcons.syncAlt),
+                iconSize: 20,
+                onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => MapaBanheiro()));
+                },
+              ),
             ),
-          );
+          ],
+        ),
+        body: Stack(
+          children: <Widget>[
+            _buildGoogleMap(context),
+            _buildContainer(),
+          ],
+        ),
+      );
     });
   }
 
-  Widget _containerCard(String _image, double lat, double lng, String restaurantName){
+  Widget containerCard(
+      String _image, double lat, double lng, String restaurantName) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5),
       child: _boxes(_image, lat, lng, restaurantName),
@@ -156,14 +151,18 @@ class MapaBanheiroState extends State<MapaBanheiro> {
         child: ListView(
           scrollDirection: Axis.horizontal,
           children: <Widget>[
-            _containerCard("https://emc.acidadeon.com/dbimagens/velorio_monte_790x505_25092018145629.jpg",
-                -21.2615909,-48.4881216,
+            containerCard(
+                "https://emc.acidadeon.com/dbimagens/velorio_monte_790x505_25092018145629.jpg",
+                -21.2615909,
+                -48.4881216,
                 "Velório Municipal \nde Monte Alto - SP"),
-            _containerCard("https://www.montealtoagora.com.br/upload/noticia_20130725113937rodoviaria.jpg",
+            containerCard(
+                "https://www.montealtoagora.com.br/upload/noticia_20130725113937rodoviaria.jpg",
                 -21.2594545,
                 -48.4969063,
                 "Terminal Rodoviário \nClotilde Artioli Mazza"),
-            _containerCard("https://media-cdn.tripadvisor.com/media/photo-s/0b/5d/3a/ac/praca-dr-luiz-zacharias.jpg",
+            containerCard(
+                "https://media-cdn.tripadvisor.com/media/photo-s/0b/5d/3a/ac/praca-dr-luiz-zacharias.jpg",
                 -21.2621781,
                 -48.4975432,
                 "Coreto Praça \nDr Luiz Zacharias de Lima"),
@@ -198,7 +197,11 @@ class MapaBanheiroState extends State<MapaBanheiro> {
                         fit: BoxFit.fill,
                         image: NetworkImage(_image),
                         loadingBuilder: (context, child, progress) {
-                          return progress == null ? child: CircularProgressIndicator(backgroundColor: Colors.blue,);
+                          return progress == null
+                              ? child
+                              : CircularProgressIndicator(
+                                  backgroundColor: Colors.blue,
+                                );
                         },
                       ),
                     ),
@@ -216,7 +219,7 @@ class MapaBanheiroState extends State<MapaBanheiro> {
     );
   }
 
-  Widget _containerStars(){
+  Widget _containerStars() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5),
       child: Icon(
@@ -235,54 +238,54 @@ class MapaBanheiroState extends State<MapaBanheiro> {
           padding: const EdgeInsets.only(left: 8.0),
           child: Container(
               child: Text(
-                restaurantName,
-                style: TextStyle(
-                    color: Colors.deepPurpleAccent,
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold),
-              )),
+            restaurantName,
+            style: TextStyle(
+                color: Colors.deepPurpleAccent,
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold),
+          )),
         ),
         SizedBox(height: 5.0),
         Container(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Container(
-                    child: Text(
-                      "",
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 18.0,
-                      ),
-                    )),
-                SizedBox(
-                  width: 5,
-                ),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-              ],
-            )),
-        SizedBox(height: 5.0),
-        Container(
-            child: Text(
-              "Banheiro Público",
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Container(
+                child: Text(
+              "",
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 18.0,
               ),
             )),
+            SizedBox(
+              width: 5,
+            ),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+          ],
+        )),
         SizedBox(height: 5.0),
         Container(
             child: Text(
-              "Monte Alto - SP",
-              style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold),
-            )),
+          "Banheiro Público",
+          style: TextStyle(
+            color: Colors.black54,
+            fontSize: 18.0,
+          ),
+        )),
+        SizedBox(height: 5.0),
+        Container(
+            child: Text(
+          "Monte Alto - SP",
+          style: TextStyle(
+              color: Colors.black54,
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold),
+        )),
       ],
     );
   }
@@ -295,7 +298,7 @@ class MapaBanheiroState extends State<MapaBanheiro> {
         mapType: MapType.normal,
         myLocationEnabled: true,
         initialCameraPosition:
-        CameraPosition(target: LatLng(-21.2621781, -48.4975432), zoom: 12),
+            CameraPosition(target: LatLng(-21.2621781, -48.4975432), zoom: 12),
         onMapCreated: _onMapCreated,
         markers: _markers.values.toSet(),
       ),
@@ -312,4 +315,3 @@ class MapaBanheiroState extends State<MapaBanheiro> {
     )));
   }
 }
-

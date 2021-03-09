@@ -12,7 +12,6 @@ class Cadastro extends StatefulWidget {
 }
 
 class _CadastroState extends State<Cadastro> {
-
   //Controladores
   TextEditingController _controllerNome = TextEditingController();
   TextEditingController _controllerEmail = TextEditingController();
@@ -28,15 +27,12 @@ class _CadastroState extends State<Cadastro> {
     String emailCad = _controllerEmail.text;
     String senhaCad = _controllerSenha.text;
 
-
     CadUsuario usuario = CadUsuario();
     usuario.nome = nomeCad;
     usuario.email = emailCad;
     usuario.senha = senhaCad;
 
-    _cadastrarUser( usuario );
-
-
+    _cadastrarUser(usuario);
   }
 
   _cadastrarUser(CadUsuario usuario) {
@@ -45,25 +41,18 @@ class _CadastroState extends State<Cadastro> {
       "nomeCadastro": usuario.nome,
       "emailCadastro": usuario.email,
       "senhaCadastro": usuario.senha,
-
     });
   }
 
-
-  _validarCampos(){
-
+  _validarCampos() {
     //Recupera dados dos campos
     String nome = _controllerNome.text;
     String email = _controllerEmail.text;
     String senha = _controllerSenha.text;
 
-
-    if( nome.isNotEmpty || _controllerNome.text != '' ){
-
-      if( email.isNotEmpty && email.contains("@") ){
-
-        if( senha.isNotEmpty && senha.length > 6 ){
-
+    if (nome.isNotEmpty || _controllerNome.text != '') {
+      if (email.isNotEmpty && email.contains("@")) {
+        if (senha.isNotEmpty && senha.length > 6) {
           setState(() {
             _onSuccess("Usuário Criado com Sucesso!");
           });
@@ -73,43 +62,35 @@ class _CadastroState extends State<Cadastro> {
           usuario.email = email;
           usuario.senha = senha;
 
-
-          _cadastrarUsuario( usuario );
+          _cadastrarUsuario(usuario);
 
           _validarCamposUsuario();
-
-
-        }else{
+        } else {
           setState(() {
             _mensagemErro = "Preencha a senha! digite mais de 6 caracteres";
           });
         }
-
-      }else{
+      } else {
         setState(() {
           _onFail("Digite um email válido utilizando @ por favor");
         });
       }
-
-    }else{
+    } else {
       setState(() {
         _onFail("Preencha o campo nome por favor");
       });
     }
-
   }
 
-  _cadastrarUsuario( Usuario usuario ){
-
+  _cadastrarUsuario(Usuario usuario) {
     FirebaseAuth auth = FirebaseAuth.instance;
 
-
-    auth.createUserWithEmailAndPassword(
+    auth
+        .createUserWithEmailAndPassword(
       email: usuario.email,
       password: usuario.senha,
-
-    ).then((firebaseUser){
-
+    )
+        .then((firebaseUser) {
       setState(() {
         _onSuccess("Usuário Criado com Sucesso!");
       });
@@ -117,25 +98,20 @@ class _CadastroState extends State<Cadastro> {
       //Salvar dados do usuário
       // ignore: deprecated_member_use
 
-
       Navigator.pop(
-          context,
-          MaterialPageRoute(
-              builder: (context) => LoginScreen(),
-
-          ),
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+        ),
       );
 
       _onSuccess("Usuário Criado com Sucesso!");
-
-    }).catchError((error){
-      print("erro app: " + error.toString() );
+    }).catchError((error) {
+      print("erro app: " + error.toString());
       setState(() {
         _onFail("Já existe uma conta para o email informado!!");
       });
-
     });
-
   }
 
   @override
@@ -153,9 +129,7 @@ class _CadastroState extends State<Cadastro> {
         decoration: BoxDecoration(
             image: DecorationImage(
                 image: AssetImage('assets/background2.jpg'),
-                fit: BoxFit.fitHeight
-            )
-        ),
+                fit: BoxFit.fitHeight)),
         padding: EdgeInsets.all(16),
         child: Center(
           child: SingleChildScrollView(
@@ -166,8 +140,8 @@ class _CadastroState extends State<Cadastro> {
                   padding: EdgeInsets.only(bottom: 30),
                   child: Image.asset(
                     "assets/loginlocation2.png",
-                    height: MediaQuery.of(context).size.height/7,
-                    width: MediaQuery.of(context).size.width/2,
+                    height: MediaQuery.of(context).size.height / 7,
+                    width: MediaQuery.of(context).size.width / 2,
                   ),
                 ),
                 Container(
@@ -203,7 +177,7 @@ class _CadastroState extends State<Cadastro> {
                 ),
                 Container(
                   margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                  child:TextField(
+                  child: TextField(
                     controller: _controllerSenha,
                     obscureText: true,
                     keyboardType: TextInputType.text,
@@ -219,10 +193,9 @@ class _CadastroState extends State<Cadastro> {
                 ),
                 Container(
                   margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                  child:TextField(
+                  child: TextField(
                     controller: _controllerSenha2,
                     obscureText: true,
-
                     keyboardType: TextInputType.text,
                     style: TextStyle(fontSize: 14),
                     decoration: InputDecoration(
@@ -248,49 +221,53 @@ class _CadastroState extends State<Cadastro> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(32)),
                       onPressed: () {
-                        if (_controllerSenha.text == _controllerSenha2.text && _controllerSenha2.text.length > 6 && _controllerSenha.text.length >6
-                        && _controllerEmail.text.contains("@") && _controllerNome.text != ''){
-                                setState(() {
-
-                                  _validarCampos();
-                                });
-                              }else if (_controllerNome.text == ''){
-                                setState(() {
-                                  _onFail("Preencha o campo nome por favor");
-                                });
-                              }else if (_controllerSenha.text != _controllerSenha2.text){
-                                setState(() {
-                                  _onFail("As senhas não coincidem!");
-                                });
-                              }else if (_controllerSenha.text.length <= 6){
-                                      setState(() {
-                                        _onFail("Digite uma senha com mais de 6 caracteres");
-                                      });
-                              }else if (_controllerSenha2.text.length <=6){
-                                      setState(() {
-                                        _onFail("Digite uma senha com mais de 6 caracteres");
-                                      });
-                              }else if (_controllerEmail.text.isNotEmpty){
-                                      setState(() {
-                                        _onFail("Digite um email válido utilizando @ por favor");
-                                      });
-                              }else if (_controllerEmail.text.isEmpty){
-                                      setState(() {
-                                        _onFail("Já existe uma conta para o email informado!!");
-                                      });
-                              }
-                                        }
-
-
-                  ),
+                        if (_controllerSenha.text == _controllerSenha2.text &&
+                            _controllerSenha2.text.length > 6 &&
+                            _controllerSenha.text.length > 6 &&
+                            _controllerEmail.text.contains("@") &&
+                            _controllerNome.text != '') {
+                          setState(() {
+                            _validarCampos();
+                          });
+                        } else if (_controllerNome.text == '') {
+                          setState(() {
+                            _onFail("Preencha o campo nome por favor");
+                          });
+                        } else if (_controllerSenha.text !=
+                            _controllerSenha2.text) {
+                          setState(() {
+                            _onFail("As senhas não coincidem!");
+                          });
+                        } else if (_controllerSenha.text.length <= 6) {
+                          setState(() {
+                            _onFail(
+                                "Digite uma senha com mais de 6 caracteres");
+                          });
+                        } else if (_controllerSenha2.text.length <= 6) {
+                          setState(() {
+                            _onFail(
+                                "Digite uma senha com mais de 6 caracteres");
+                          });
+                        } else if (_controllerEmail.text.isNotEmpty) {
+                          setState(() {
+                            _onFail(
+                                "Digite um email válido utilizando @ por favor");
+                          });
+                        } else if (_controllerEmail.text.isEmpty) {
+                          setState(() {
+                            _onFail(
+                                "Já existe uma conta para o email informado!!");
+                          });
+                        }
+                      }),
                 ),
                 Center(
                   child: Text(
                     _mensagemErro,
                     style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20, fontWeight: FontWeight.bold
-                    ),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
                   ),
                 )
               ],
@@ -300,25 +277,32 @@ class _CadastroState extends State<Cadastro> {
       ),
     );
   }
-  void _onSuccess(String _text){
+
+  void _onSuccess(String _text) {
     _scaffoldKey.currentState.showSnackBar(
-      SnackBar(content: Text(_text, style: TextStyle(
-          color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold
-      ),),
+      SnackBar(
+        content: Text(
+          _text,
+          style: TextStyle(
+              color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.green,
         duration: Duration(seconds: 5),
       ),
     );
   }
-  void _onFail(String _text){
+
+  void _onFail(String _text) {
     _scaffoldKey.currentState.showSnackBar(
-      SnackBar(content: Text(_text, style: TextStyle(
-          color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold
-      ),),
+      SnackBar(
+        content: Text(
+          _text,
+          style: TextStyle(
+              color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.red,
         duration: Duration(seconds: 5),
       ),
     );
   }
-
 }

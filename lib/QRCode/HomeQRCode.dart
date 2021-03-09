@@ -5,7 +5,6 @@ import 'package:ilocationma/QRCode/scan.dart';
 import 'package:ilocationma/home/HomePrincipal.dart';
 import 'generate.dart';
 
-
 void main() => runApp(MyHomeQR());
 
 class MyHomeQR extends StatelessWidget {
@@ -25,7 +24,6 @@ class HomeQrCode extends StatefulWidget {
 }
 
 class _HomeQrCodeState extends State<HomeQrCode> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,21 +40,20 @@ class _HomeQrCodeState extends State<HomeQrCode> {
                   color: Colors.white,
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => MyHomePrincipal()
-                    ));
+                        builder: (context) => MyHomePrincipal()));
                   },
                 ),
-
               ],
             ),
           ),
           SizedBox(height: 25.0),
-          FadeAnimation(1,
+          FadeAnimation(
+            1,
             Padding(
               padding: EdgeInsets.only(left: 40.0),
               child: Row(
                 children: <Widget>[
-                  Text('iLocationMA' ,
+                  Text('iLocationMA',
                       style: TextStyle(
                           fontFamily: 'Montserrat',
                           color: Colors.white,
@@ -64,10 +61,13 @@ class _HomeQrCodeState extends State<HomeQrCode> {
                           fontSize: 25.0)),
                 ],
               ),
-
-            ),),
-          SizedBox(height: 10,),
-          FadeAnimation(1,
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          FadeAnimation(
+            1,
             Padding(
               padding: EdgeInsets.only(left: 40.0),
               child: Row(
@@ -79,8 +79,8 @@ class _HomeQrCodeState extends State<HomeQrCode> {
                           fontSize: 20.0))
                 ],
               ),
-
-            ),),
+            ),
+          ),
           SizedBox(height: 40.0),
           Container(
             height: MediaQuery.of(context).size.height - 185.0,
@@ -92,23 +92,37 @@ class _HomeQrCodeState extends State<HomeQrCode> {
               primary: false,
               padding: EdgeInsets.all(16),
               children: <Widget>[
-
-                Padding(padding: EdgeInsets.only(top: 10,bottom: 30,left: 35),
+                Padding(
+                  padding: EdgeInsets.only(top: 10, bottom: 30, left: 35),
                   child: Column(
                     children: <Widget>[
                       Image.network(
                         "https://images.vexels.com/media/users/3/158120/isolated/preview/bff830206408c36b53b196b155747b02-qr-code-on-smartphone-by-vexels.png",
                         loadingBuilder: (context, child, progress) {
-                          return progress == null ? child: LinearProgressIndicator(backgroundColor: Colors.black87,);
+                          return progress == null
+                              ? child
+                              : LinearProgressIndicator(
+                                  backgroundColor: Colors.black87,
+                                );
                         },
                       ),
-                      SizedBox(height: 20.0,),
-                      FadeAnimation(1, flatButton("Scanner QR CODE", MyScanQRCode()),),
-                      SizedBox(height: 20.0,),
-                      FadeAnimation(2, flatButton("Gerar QR CODE", MyGerarQRCode()),),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      FadeAnimation(
+                        1,
+                        flatButton("Scanner QR CODE", MyScanQRCode()),
+                      ),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      FadeAnimation(
+                        2,
+                        flatButton("Gerar QR CODE", MyGerarQRCode()),
+                      ),
                     ],
-                  ),),
-
+                  ),
+                ),
               ],
             ),
           )
@@ -116,6 +130,7 @@ class _HomeQrCodeState extends State<HomeQrCode> {
       ),
     );
   }
+
   Widget flatButton(String text, Widget widget) {
     return FlatButton(
       padding: EdgeInsets.all(15.0),
@@ -125,12 +140,11 @@ class _HomeQrCodeState extends State<HomeQrCode> {
       },
       child: Text(
         text,
-        style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold),
+        style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
       ),
       shape: RoundedRectangleBorder(
-          side: BorderSide(color: Colors.blue,width: 3.0),
+          side: BorderSide(color: Colors.blue, width: 3.0),
           borderRadius: BorderRadius.circular(20.0)),
     );
   }
-
 }

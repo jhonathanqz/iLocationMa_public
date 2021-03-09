@@ -12,9 +12,7 @@ class AppBarGradient1 extends StatelessWidget {
                 Colors.blue[600],
                 Colors.black87,
               ],
-              tileMode: TileMode.clamp
-          )
-      ),
+              tileMode: TileMode.clamp)),
     );
   }
 }
@@ -33,7 +31,6 @@ class Markers {
     name = json['name'];
     address = json['address'];
     url = json['url'];
-
   }
 
   Map<String, dynamic> toJson() {
@@ -53,7 +50,6 @@ class NameUsuario {
   NameUsuario({this.nomeCadastro});
   NameUsuario.fromJson(Map<String, dynamic> json) {
     nomeCadastro = json['nomeCadastro'].toString();
-
   }
 
   Map<String, dynamic> toJson() {
@@ -86,5 +82,3 @@ class MarkersBoxes {
     return data;
   }
 }
-
-

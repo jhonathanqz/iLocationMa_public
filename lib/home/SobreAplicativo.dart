@@ -1,11 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ilocationma/Animation/FadeAnimation.dart';
-import 'package:ilocationma/model/FAQ_Model.dart';
 import 'HomePrincipal.dart';
-
 
 void main() => runApp(MySobreApp());
 
@@ -26,8 +22,6 @@ class SobreApp extends StatefulWidget {
 }
 
 class _SobreAppState extends State<SobreApp> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,21 +38,20 @@ class _SobreAppState extends State<SobreApp> {
                   color: Colors.white,
                   onPressed: () {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => MyHomePrincipal()
-                    ));
+                        builder: (context) => MyHomePrincipal()));
                   },
                 ),
-
               ],
             ),
           ),
           SizedBox(height: 25.0),
-          FadeAnimation(1,
+          FadeAnimation(
+            1,
             Padding(
               padding: EdgeInsets.only(left: 40.0),
               child: Row(
                 children: <Widget>[
-                  Text('iLocationMA' ,
+                  Text('iLocationMA',
                       style: TextStyle(
                           fontFamily: 'Montserrat',
                           color: Colors.white,
@@ -66,10 +59,13 @@ class _SobreAppState extends State<SobreApp> {
                           fontSize: 25.0)),
                 ],
               ),
-
-            ),),
-          SizedBox(height: 10,),
-          FadeAnimation(1,
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          FadeAnimation(
+            1,
             Padding(
               padding: EdgeInsets.only(left: 40.0),
               child: Row(
@@ -81,63 +77,69 @@ class _SobreAppState extends State<SobreApp> {
                           fontSize: 20.0))
                 ],
               ),
-
-            ),),
+            ),
+          ),
           SizedBox(height: 40.0),
           Container(
             height: MediaQuery.of(context).size.height - 185.0,
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(35.0), topRight: Radius.circular(35)),
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(35.0),
+                  topRight: Radius.circular(35)),
             ),
             child: ListView(
               primary: false,
               padding: EdgeInsets.all(10),
               children: <Widget>[
-
-                Padding(padding: EdgeInsets.only(top: 10,bottom: 30,left: 5, right: 5),
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 35,),
-                    FadeAnimation(1, Container(
-                        width: MediaQuery.of(context).size.width,
-
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 15),
-                          child: Text(
-                            "       O aplicativo iLocationMa foi desenvolvido por Jhonathan C. Queiroz como projeto de trabalho para apresentação de TCC no curso de Ciência da Computação," " e também com o intuito de poder ajudar a administração de turismo na cidade de Monte Alto - SP."
-
-                                "\n\n       Aos leitores, gostaria de deixar minha profunda gratidão há todos os envolvidos que me auxiliaram e me apoiaram no desenvolvimento do aplicativo.",
-                            style: TextStyle(
-                                fontSize: 17,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.black),
-                            textAlign: TextAlign.justify,
-                          ),
-                        )),),
-                    SizedBox(height: 20,),
-                    Center(
-                      child: Text("iLocationMa v1.0.0",style: TextStyle(
-                          fontSize: 17
-                      ),),
-                    ),
-
-
-
-
-                    Container(
-                      margin: EdgeInsets.only(top: 10, bottom: 10),
-                      height: 500,
-                      width: 300,
-                      child: PageView(
-                        children: <Widget>[
-                          _img("assets/Logo_black.png"),
-                        ],
+                Padding(
+                  padding:
+                      EdgeInsets.only(top: 10, bottom: 30, left: 5, right: 5),
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: 35,
                       ),
-                    ),
-                  ],
-                ),),
-
+                      FadeAnimation(
+                        1,
+                        Container(
+                            width: MediaQuery.of(context).size.width,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 15),
+                              child: Text(
+                                "       O aplicativo iLocationMa foi desenvolvido por Jhonathan C. Queiroz como projeto de trabalho para apresentação de TCC no curso de Ciência da Computação,"
+                                " e também com o intuito de poder ajudar a administração de turismo na cidade de Monte Alto - SP."
+                                "\n\n       Aos leitores, gostaria de deixar minha profunda gratidão há todos os envolvidos que me auxiliaram e me apoiaram no desenvolvimento do aplicativo.",
+                                style: TextStyle(
+                                    fontSize: 17,
+                                    fontStyle: FontStyle.italic,
+                                    color: Colors.black),
+                                textAlign: TextAlign.justify,
+                              ),
+                            )),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Center(
+                        child: Text(
+                          "iLocationMa v1.0.0",
+                          style: TextStyle(fontSize: 17),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 10, bottom: 10),
+                        height: 500,
+                        width: 300,
+                        child: PageView(
+                          children: <Widget>[
+                            _img("assets/Logo_black.png"),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           )
@@ -145,14 +147,15 @@ class _SobreAppState extends State<SobreApp> {
       ),
     );
   }
+
   _img(String img) {
     return Image.asset(
       img,
       fit: BoxFit.cover,
     );
   }
-
 }
+
 class MyClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {

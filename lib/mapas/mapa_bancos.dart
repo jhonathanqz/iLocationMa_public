@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:ilocationma/add/add_bancos.dart';
-import 'package:ilocationma/home/HomeEscolha.dart';
+
 import 'package:ilocationma/home/HomePrincipal.dart';
 import 'package:ilocationma/home/OpenUtil.dart';
 import 'package:ilocationma/modelsfunc/user_model.dart';
@@ -40,20 +40,6 @@ class MapaBancosState extends State<MapaBancos> {
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-
-  Future<void> _boxess() async {
-    var snapshots = FirebaseFirestore.instance;
-    QuerySnapshot resultado = await snapshots.collection("markers").get();
-    resultado.docs.forEach((d) {
-      print(d.data());
-      final result = MarkersBoxes.fromJson(d.data());
-
-      final box = _boxes(result.url, result.lat, result.lng, result.name);
-      final contbox = _containerCard(result.url, result.lat, result.lng, result.name);
-
-    });
-
-  }
 
 
   Completer<GoogleMapController> _controller = Completer();
@@ -120,7 +106,7 @@ class MapaBancosState extends State<MapaBancos> {
                 iconSize: 23,
                 onPressed: () {
                   setState(() {
-                    model.verificaLoginMapa(context, MyAddBancos());
+                    model.verificaLoginMapa(context, AddBancos());
                   });
 
                 },
@@ -144,7 +130,7 @@ class MapaBancosState extends State<MapaBancos> {
         body: Stack(
           children: <Widget>[
             _buildGoogleMap(context),
-            _buildContainer(_boxess()),
+            _buildContainer(),
           ],
         ),
       );
@@ -159,7 +145,7 @@ class MapaBancosState extends State<MapaBancos> {
   }
 
 
-  Widget _buildContainer(_boxess) {
+  Widget _buildContainer() {
     return Align(
       alignment: Alignment.bottomLeft,
       child: Container(

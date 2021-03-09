@@ -83,9 +83,9 @@ class _LoginScreenState extends State<LoginScreen> {
     ).then((firebaseUser){
 
 
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => MyHomePrincipal()
-      ));
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context)=>MyHomePrincipal()),
+      (Route<dynamic> route) => false);
+
 
       setState(() {
         _onShowAlert();

@@ -1,23 +1,15 @@
-
 class CadUsuario {
-
   String _nome;
   String _email;
   String _senha;
 
   CadUsuario();
 
-  Map<String, dynamic> toMap(){
-
-    Map<String, dynamic> map = {
-      "nome" : this.nome,
-      "email" : this.email
-    };
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {"nome": this.nome, "email": this.email};
 
     return map;
-
   }
-
 
   String get senha => _senha;
 
@@ -36,6 +28,4 @@ class CadUsuario {
   set nome(String value) {
     _nome = value;
   }
-
-
 }

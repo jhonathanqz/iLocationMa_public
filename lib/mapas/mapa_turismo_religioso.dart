@@ -34,17 +34,14 @@ class MapaTurismoReligioso extends StatefulWidget {
 }
 
 class MapaTurismoReligiosoState extends State<MapaTurismoReligioso> {
-
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Completer<GoogleMapController> _controller = Completer();
 
-
   final Map<String, Marker> _markers = {};
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
-
     var db = FirebaseFirestore.instance;
     QuerySnapshot resultado = await db.collection("markerstur_religioso").get();
 
@@ -61,142 +58,143 @@ class MapaTurismoReligiosoState extends State<MapaTurismoReligioso> {
             infoWindow: InfoWindow(
                 title: result.name,
                 snippet: result.address,
-                onTap: (){
+                onTap: () {
                   OpenUtil.openMap(result.lat, result.lng);
-
-                }
-            ),
+                }),
             icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueGreen)
-        );
+                BitmapDescriptor.hueGreen));
         _markers[result.name] = marker;
-
       });
     });
   }
 
   void _verificaLogin(String _text) {
-    auth.authStateChanges()
-        .listen((User user) {
+    auth.authStateChanges().listen((User user) {
       if (user == null) {
         showDialog(
             context: context,
             barrierDismissible: true,
             builder: (context) => AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius:
-                  BorderRadius.circular(16)),
-              elevation: 2,
-              backgroundColor: Colors.grey[200],
-              title: Text(
-                "Faça Login ou Cadastre-se",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
-              ),
-              content: Text(
-                "Para utilizar a função desejada, por favor, faça Login ou Cadastre-se.",
-                style: TextStyle(fontSize: 17),
-              ),
-              actions: <Widget>[
-                FlatButton(onPressed: () {
-                  Navigator.pop(context);
-                },
-                    child: Text("Voltar ao Mapa", style: TextStyle(
-                        fontSize: 17, color: Colors.blue, fontWeight: FontWeight.bold
-                    ),)),
-                FlatButton(onPressed: () {
-                  setState(() {
-
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => HomeEscolha()
-                    ));
-                  });
-                },
-                    child: Text("Login", style: TextStyle(
-                        fontSize: 17, color: Colors.redAccent, fontWeight: FontWeight.bold
-                    ),))
-              ],
-            ));
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  elevation: 2,
+                  backgroundColor: Colors.grey[200],
+                  title: Text(
+                    "Faça Login ou Cadastre-se",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  ),
+                  content: Text(
+                    "Para utilizar a função desejada, por favor, faça Login ou Cadastre-se.",
+                    style: TextStyle(fontSize: 17),
+                  ),
+                  actions: <Widget>[
+                    FlatButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Voltar ao Mapa",
+                          style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold),
+                        )),
+                    FlatButton(
+                        onPressed: () {
+                          setState(() {
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => HomeEscolha()));
+                          });
+                        },
+                        child: Text(
+                          "Login",
+                          style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold),
+                        ))
+                  ],
+                ));
 
         _scaffoldKey.currentState.showSnackBar(
           SnackBar(
             content: Text(
               _text,
               style: TextStyle(
-                  color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold),
             ),
             backgroundColor: Colors.redAccent,
             duration: Duration(seconds: 3),
           ),
         );
-
       } else {
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => MyAddTurismo())
-        );
-      }});
+            MaterialPageRoute(builder: (context) => MyAddTurismo()));
+      }
+    });
   }
 
   double zoomVal = 5.0;
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<UserModel>(
-        builder: (context, child, model) {
-          return Scaffold(
-            key: _scaffoldKey,
-            appBar: AppBar(
-              flexibleSpace: AppBarGradient3(),
-              leading: IconButton(
-                icon: Icon(FontAwesomeIcons.arrowLeft),
+    return ScopedModelDescendant<UserModel>(builder: (context, child, model) {
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          flexibleSpace: AppBarGradient3(),
+          leading: IconButton(
+            icon: Icon(FontAwesomeIcons.arrowLeft),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => HomeMapTur()));
+            },
+          ),
+          title: Text("Turismo Religioso"),
+          centerTitle: true,
+          actions: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: IconButton(
+                icon: Icon(Icons.add_circle),
+                iconSize: 23,
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => HomeMapTur()));
+                  setState(() {
+                    model.verificaLoginMapa(context, MyAddTurismo());
+                  });
                 },
               ),
-              title: Text("Turismo Religioso"),
-              centerTitle: true,
-              actions: <Widget>[
-                Padding(padding: EdgeInsets.symmetric(horizontal: 15),
-                  child: IconButton(
-                    icon: Icon(Icons.add_circle),
-                    iconSize: 23,
-                    onPressed: () {
-                      setState(() {
-                        model.verificaLoginMapa(context, MyAddTurismo());
-                      });
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: IconButton(
-                    icon: Icon(FontAwesomeIcons.syncAlt),
-                    iconSize: 20,
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => MapaTurismoReligioso()
-                      ));
-
-                    },
-                  ),
-                ),
-              ],
             ),
-            body: Stack(
-              children: <Widget>[
-                _buildGoogleMap(context),
-                _buildContainer(),
-              ],
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: IconButton(
+                icon: Icon(FontAwesomeIcons.syncAlt),
+                iconSize: 20,
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => MapaTurismoReligioso()));
+                },
+              ),
             ),
-          );
+          ],
+        ),
+        body: Stack(
+          children: <Widget>[
+            _buildGoogleMap(context),
+            _buildContainer(),
+          ],
+        ),
+      );
     });
   }
 
-  Widget _containerCard(String _image, double lat, double lng, String restaurantName, String restaurantName2){
+  Widget _containerCard(String _image, double lat, double lng,
+      String restaurantName, String restaurantName2) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5),
       child: _boxes(_image, lat, lng, restaurantName, restaurantName2),
@@ -212,34 +210,44 @@ class MapaTurismoReligiosoState extends State<MapaTurismoReligioso> {
         child: ListView(
           scrollDirection: Axis.horizontal,
           children: <Widget>[
-            _containerCard("https://live.staticflickr.com/1138/838278909_4ae086333b_z.jpg",
-                -21.2594065, -48.4912206,
+            _containerCard(
+                "https://live.staticflickr.com/1138/838278909_4ae086333b_z.jpg",
+                -21.2594065,
+                -48.4912206,
                 "Mausoleu Menina Izildinha",
                 "Turismo Religioso"),
-            _containerCard("https://photos.wikimapia.org/p/00/00/21/19/51_big.jpg",
-                -21.261663, -48.4964844,
+            _containerCard(
+                "https://photos.wikimapia.org/p/00/00/21/19/51_big.jpg",
+                -21.261663,
+                -48.4964844,
                 "Paróquia Senhor Bom Jesus Monte Alto",
                 "Turismo Religioso"),
-            _containerCard("https://mapio.net/images-p/39927332.jpg",
-                -21.2369708, -48.6449736,
+            _containerCard(
+                "https://mapio.net/images-p/39927332.jpg",
+                -21.2369708,
+                -48.6449736,
                 "Santuário Nossa Senhora da Conceição Montesina",
                 "Turismo Religioso"),
-            _containerCard("https://docplayer.com.br/docs-images/68/59269135/images/56-0.jpg",
-                -21.2550297, -48.5063877,
+            _containerCard(
+                "https://docplayer.com.br/docs-images/68/59269135/images/56-0.jpg",
+                -21.2550297,
+                -48.5063877,
                 "Santuário Nossa Senhora do Rosário de Fátima",
                 "Turismo Religioso"),
-            _containerCard("https://upload.wikimedia.org/wikipedia/commons/e/ee/Capela_de_Santa_Luzia_-_Morrinho_de_Santa_Luzia_-_Monte_Alto_-_panoramio.jpg",
-                -21.2140038, -48.585567,
+            _containerCard(
+                "https://upload.wikimedia.org/wikipedia/commons/e/ee/Capela_de_Santa_Luzia_-_Morrinho_de_Santa_Luzia_-_Monte_Alto_-_panoramio.jpg",
+                -21.2140038,
+                -48.585567,
                 "Capela de Santa Luzia",
                 "Turismo Religioso"),
-
           ],
         ),
       ),
     );
   }
 
-  Widget _boxes(String _image, double lat, double lng, String restaurantName, String restaurantName2) {
+  Widget _boxes(String _image, double lat, double lng, String restaurantName,
+      String restaurantName2) {
     return GestureDetector(
       onTap: () {
         _gotoLocation(lat, lng);
@@ -264,7 +272,11 @@ class MapaTurismoReligiosoState extends State<MapaTurismoReligioso> {
                         fit: BoxFit.fill,
                         image: NetworkImage(_image),
                         loadingBuilder: (context, child, progress) {
-                          return progress == null ? child: CircularProgressIndicator(backgroundColor: Colors.blue,);
+                          return progress == null
+                              ? child
+                              : CircularProgressIndicator(
+                                  backgroundColor: Colors.blue,
+                                );
                         },
                       ),
                     ),
@@ -272,11 +284,10 @@ class MapaTurismoReligiosoState extends State<MapaTurismoReligioso> {
                   Container(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: myDetailsContainer1(restaurantName, restaurantName2),
+                      child:
+                          myDetailsContainer1(restaurantName, restaurantName2),
                     ),
                   ),
-
-
                 ],
               )),
         ),
@@ -284,7 +295,7 @@ class MapaTurismoReligiosoState extends State<MapaTurismoReligioso> {
     );
   }
 
-  Widget _containerStars(){
+  Widget _containerStars() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5),
       child: Icon(
@@ -303,67 +314,65 @@ class MapaTurismoReligiosoState extends State<MapaTurismoReligioso> {
           padding: const EdgeInsets.only(left: 8.0),
           child: Container(
               child: Text(
-                restaurantName,
-                style: TextStyle(
-                    color: Colors.green[500],
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold),
-              )),
+            restaurantName,
+            style: TextStyle(
+                color: Colors.green[500],
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold),
+          )),
         ),
-
         SizedBox(height: 5.0),
-
         Container(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Container(
-                    child: Text(
-                      "5.0",
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 18.0,
-                      ),
-                    )),
-                SizedBox(
-                  width: 5,
-                ),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-              ],
-            )),
-        SizedBox(height: 5.0),
-        Container(
-            child: Text(
-              "Brasil",
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Container(
+                child: Text(
+              "5.0",
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 18.0,
               ),
             )),
+            SizedBox(
+              width: 5,
+            ),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+          ],
+        )),
         SizedBox(height: 5.0),
         Container(
             child: Text(
-              "Monte Alto, SP",
-              style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold),
-            )),
+          "Brasil",
+          style: TextStyle(
+            color: Colors.black54,
+            fontSize: 18.0,
+          ),
+        )),
+        SizedBox(height: 5.0),
+        Container(
+            child: Text(
+          "Monte Alto, SP",
+          style: TextStyle(
+              color: Colors.black54,
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold),
+        )),
         SizedBox(height: 5.0),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: Container(
               child: Text(
-                restaurantName2,
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.bold),
-              )),
+            restaurantName2,
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: 22.0,
+                fontWeight: FontWeight.bold),
+          )),
         ),
       ],
     );
@@ -377,10 +386,9 @@ class MapaTurismoReligiosoState extends State<MapaTurismoReligioso> {
         mapType: MapType.normal,
         myLocationEnabled: true,
         initialCameraPosition:
-        CameraPosition(target: LatLng(-21.2621781, -48.4975432), zoom: 11),
+            CameraPosition(target: LatLng(-21.2621781, -48.4975432), zoom: 11),
         onMapCreated: _onMapCreated,
         markers: _markers.values.toSet(),
-
       ),
     );
   }
@@ -394,5 +402,4 @@ class MapaTurismoReligiosoState extends State<MapaTurismoReligioso> {
       bearing: 45.0,
     )));
   }
-
 }

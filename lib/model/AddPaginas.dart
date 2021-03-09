@@ -1,6 +1,4 @@
-
 class AddPaginas {
-
   String _nome;
   String _local;
   String _end;
@@ -8,17 +6,15 @@ class AddPaginas {
 
   AddPaginas();
 
-  Map<String, dynamic> toMap(){
-
+  Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
-      "nome" : this._nome,
-      "email" : this._local,
+      "nome": this._nome,
+      "email": this._local,
       "end": this._end,
       "obs": this._obs
     };
 
     return map;
-
   }
 
   String get end => _end;
@@ -44,5 +40,4 @@ class AddPaginas {
   set obs(String value) {
     _obs = value;
   }
-
 }

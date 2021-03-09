@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ilocationma/model/AddPaginas.dart';
@@ -28,7 +27,7 @@ class AddModel extends Model {
   ];
   var _currentItemSelected = 'Sem informação sobre o horário';
 
-  void   NovaLocalizacao (String _text) {
+  void NovaLocalizacao(String _text) {
     //Recupera dados dos campos
     String nome = _controllerNome.text;
     String local = _controllerLocal.text;
@@ -57,5 +56,4 @@ class AddModel extends Model {
       "horario": _currentItemSelected,
     });
   }
-
 }

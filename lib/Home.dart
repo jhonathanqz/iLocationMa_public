@@ -7,11 +7,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
-  String _emailUsuario= "";
+  String _emailUsuario = "";
 
   Future _recuperarDadosUsuario() async {
-
     FirebaseAuth auth = FirebaseAuth.instance;
     // ignore: deprecated_member_use
     FirebaseUser usuarioLogado = auth.currentUser;
@@ -19,13 +17,10 @@ class _HomeState extends State<Home> {
     setState(() {
       _emailUsuario = usuarioLogado.email;
     });
-
   }
 
   @override
   void initState() {
-
-
     _recuperarDadosUsuario();
     super.initState();
   }

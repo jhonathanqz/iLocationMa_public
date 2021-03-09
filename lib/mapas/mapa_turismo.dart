@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ilocationma/add/add_turismo.dart';
-import 'package:ilocationma/home/HomeEscolha.dart';
 import 'package:ilocationma/home/OpenUtil.dart';
 import 'package:ilocationma/modelsfunc/user_model.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -34,17 +33,14 @@ class MapaTurismo extends StatefulWidget {
 }
 
 class MapaTurismoState extends State<MapaTurismo> {
-
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Completer<GoogleMapController> _controller = Completer();
 
-
   final Map<String, Marker> _markers = {};
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
-
     var db = FirebaseFirestore.instance;
     QuerySnapshot resultado = await db.collection("markerstur").get();
 
@@ -61,16 +57,12 @@ class MapaTurismoState extends State<MapaTurismo> {
             infoWindow: InfoWindow(
                 title: result.name,
                 snippet: result.address,
-                onTap: (){
+                onTap: () {
                   OpenUtil.openMap(result.lat, result.lng);
-
-                }
-            ),
+                }),
             icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueGreen)
-        );
+                BitmapDescriptor.hueGreen));
         _markers[result.name] = marker;
-
       });
     });
   }
@@ -79,66 +71,68 @@ class MapaTurismoState extends State<MapaTurismo> {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<UserModel>(
-        builder: (context, child, model) {
-          return Scaffold(
-            key: _scaffoldKey,
-            appBar: AppBar(
-              flexibleSpace: AppBarGradient3(),
-              leading: IconButton(
-                icon: Icon(FontAwesomeIcons.arrowLeft),
+    return ScopedModelDescendant<UserModel>(builder: (context, child, model) {
+      return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          flexibleSpace: AppBarGradient3(),
+          leading: IconButton(
+            icon: Icon(FontAwesomeIcons.arrowLeft),
+            onPressed: () {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => HomeMapTur()));
+            },
+          ),
+          title: Text("Turismo Local"),
+          centerTitle: true,
+          actions: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: IconButton(
+                icon: Icon(Icons.add_circle),
+                iconSize: 23,
+                onPressed: () {
+                  setState(() {
+                    model.verificaLoginMapa(context, MyAddTurismo());
+                  });
+                },
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: IconButton(
+                icon: Icon(FontAwesomeIcons.syncAlt),
+                iconSize: 20,
                 onPressed: () {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (BuildContext context) => HomeMapTur()));
+                          builder: (BuildContext context) => MapaTurismo()));
                 },
               ),
-              title: Text("Turismo Local"),
-              centerTitle: true,
-              actions: <Widget>[
-                Padding(padding: EdgeInsets.symmetric(horizontal: 15),
-                  child: IconButton(
-                    icon: Icon(Icons.add_circle),
-                    iconSize: 23,
-                    onPressed: () {
-                      setState(() {
-                        model.verificaLoginMapa(context, MyAddTurismo());
-                      });
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: IconButton(
-                    icon: Icon(FontAwesomeIcons.syncAlt),
-                    iconSize: 20,
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => MapaTurismo()));
-                    },
-                  ),
-                ),
-              ],
             ),
-            body: Stack(
-              children: <Widget>[
-                _buildGoogleMap(context),
-                _buildContainer(),
-              ],
-            ),
-          );
+          ],
+        ),
+        body: Stack(
+          children: <Widget>[
+            _buildGoogleMap(context),
+            _buildContainer(),
+          ],
+        ),
+      );
     });
   }
 
-  Widget _containerCard(String _image, double lat, double lng, String restaurantName, String restaurantName2){
+  Widget _containerCard(String _image, double lat, double lng,
+      String restaurantName, String restaurantName2) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5),
       child: _boxes(_image, lat, lng, restaurantName, restaurantName2),
     );
   }
+
   Widget _buildContainer() {
     return Align(
       alignment: Alignment.bottomLeft,
@@ -148,42 +142,56 @@ class MapaTurismoState extends State<MapaTurismo> {
         child: ListView(
           scrollDirection: Axis.horizontal,
           children: <Widget>[
-            _containerCard("https://media-cdn.tripadvisor.com/media/photo-s/0b/5d/3a/9d/praca-dr-luiz-zacharias.jpg",
-                -21.2621781, -48.4975432,
+            _containerCard(
+                "https://media-cdn.tripadvisor.com/media/photo-s/0b/5d/3a/9d/praca-dr-luiz-zacharias.jpg",
+                -21.2621781,
+                -48.4975432,
                 "Praça Dr Luiz Zacharias de Lima",
                 "Turismo Local"),
-            _containerCard("https://s2.glbimg.com/1AbbGDkTx2R5fT13caRbCMR-754=/0x0:1700x1065/1008x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2018/C/k/fLqp0NRnulTAmdXhKBNw/dsc1470.jpg",
-                -21.2589509, -48.4992249,
+            _containerCard(
+                "https://s2.glbimg.com/1AbbGDkTx2R5fT13caRbCMR-754=/0x0:1700x1065/1008x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2018/C/k/fLqp0NRnulTAmdXhKBNw/dsc1470.jpg",
+                -21.2589509,
+                -48.4992249,
                 "Museu de Paleontologia",
                 "Turismo Local"),
-            _containerCard("https://s2.glbimg.com/UTmRS6YWIQDMLYBvtGYkDrWIpMs=/0x0:1700x1063/1008x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2018/p/e/ygQEaeQLmZFKgSaVyzgw/dsc-0169.jpg",
-                -21.2589509, -48.4992249,
+            _containerCard(
+                "https://s2.glbimg.com/UTmRS6YWIQDMLYBvtGYkDrWIpMs=/0x0:1700x1063/1008x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2018/p/e/ygQEaeQLmZFKgSaVyzgw/dsc-0169.jpg",
+                -21.2589509,
+                -48.4992249,
                 "Museu de Arqueologia",
                 "Turismo Local"),
-            _containerCard("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Museu_hist%C3%B3rico_de_Monte_Alto_-_R%C3%A1dios_antigos_-_panoramio.jpg/1200px-Museu_hist%C3%B3rico_de_Monte_Alto_-_R%C3%A1dios_antigos_-_panoramio.jpg",
-                -21.2589509, -48.4992249,
+            _containerCard(
+                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Museu_hist%C3%B3rico_de_Monte_Alto_-_R%C3%A1dios_antigos_-_panoramio.jpg/1200px-Museu_hist%C3%B3rico_de_Monte_Alto_-_R%C3%A1dios_antigos_-_panoramio.jpg",
+                -21.2589509,
+                -48.4992249,
                 "Museu Histórico",
                 "Turismo Local"),
-            _containerCard("https://cdn.ocp.news/2019/10/biblioteca-premia-livros.jpg",
-                -21.2589509, -48.4992249,
+            _containerCard(
+                "https://cdn.ocp.news/2019/10/biblioteca-premia-livros.jpg",
+                -21.2589509,
+                -48.4992249,
                 "Biblioteca Municipal",
                 "Turismo Local"),
-            _containerCard("https://www.revide.com.br/media/upload/noticias/2016/07/12/cinema-20160712.jpg",
-                -21.2589509, -48.4992249,
+            _containerCard(
+                "https://www.revide.com.br/media/upload/noticias/2016/07/12/cinema-20160712.jpg",
+                -21.2589509,
+                -48.4992249,
                 "Cinema Cine Monte Alto",
                 "Turismo Local"),
-            _containerCard("https://www.baressp.com.br/bares/fotos/bancarios_fachada.jpg",
-                -21.2853697, -48.488186,
+            _containerCard(
+                "https://www.baressp.com.br/bares/fotos/bancarios_fachada.jpg",
+                -21.2853697,
+                -48.488186,
                 "Campestre Clube Monte Alto",
                 "Turismo Local"),
-
           ],
         ),
       ),
     );
   }
 
-  Widget _boxes(String _image, double lat, double lng, String restaurantName, String restaurantName2) {
+  Widget _boxes(String _image, double lat, double lng, String restaurantName,
+      String restaurantName2) {
     return GestureDetector(
       onTap: () {
         _gotoLocation(lat, lng);
@@ -208,7 +216,11 @@ class MapaTurismoState extends State<MapaTurismo> {
                         fit: BoxFit.fill,
                         image: NetworkImage(_image),
                         loadingBuilder: (context, child, progress) {
-                          return progress == null ? child: CircularProgressIndicator(backgroundColor: Colors.blue,);
+                          return progress == null
+                              ? child
+                              : CircularProgressIndicator(
+                                  backgroundColor: Colors.blue,
+                                );
                         },
                       ),
                     ),
@@ -216,11 +228,10 @@ class MapaTurismoState extends State<MapaTurismo> {
                   Container(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: myDetailsContainer1(restaurantName, restaurantName2),
+                      child:
+                          myDetailsContainer1(restaurantName, restaurantName2),
                     ),
                   ),
-
-
                 ],
               )),
         ),
@@ -228,7 +239,7 @@ class MapaTurismoState extends State<MapaTurismo> {
     );
   }
 
-  Widget _containerStars(){
+  Widget _containerStars() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5),
       child: Icon(
@@ -247,67 +258,65 @@ class MapaTurismoState extends State<MapaTurismo> {
           padding: const EdgeInsets.only(left: 8.0),
           child: Container(
               child: Text(
-                restaurantName,
-                style: TextStyle(
-                    color: Colors.green[500],
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold),
-              )),
+            restaurantName,
+            style: TextStyle(
+                color: Colors.green[500],
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold),
+          )),
         ),
-
         SizedBox(height: 5.0),
-
         Container(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Container(
-                    child: Text(
-                      "5.0",
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 18.0,
-                      ),
-                    )),
-                SizedBox(
-                  width: 5,
-                ),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-              ],
-            )),
-        SizedBox(height: 5.0),
-        Container(
-            child: Text(
-              "Brasil",
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Container(
+                child: Text(
+              "5.0",
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 18.0,
               ),
             )),
+            SizedBox(
+              width: 5,
+            ),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+          ],
+        )),
         SizedBox(height: 5.0),
         Container(
             child: Text(
-              "Monte Alto, SP",
-              style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold),
-            )),
+          "Brasil",
+          style: TextStyle(
+            color: Colors.black54,
+            fontSize: 18.0,
+          ),
+        )),
+        SizedBox(height: 5.0),
+        Container(
+            child: Text(
+          "Monte Alto, SP",
+          style: TextStyle(
+              color: Colors.black54,
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold),
+        )),
         SizedBox(height: 5.0),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: Container(
               child: Text(
-                restaurantName2,
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.bold),
-              )),
+            restaurantName2,
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: 22.0,
+                fontWeight: FontWeight.bold),
+          )),
         ),
       ],
     );
@@ -321,10 +330,9 @@ class MapaTurismoState extends State<MapaTurismo> {
         mapType: MapType.normal,
         myLocationEnabled: true,
         initialCameraPosition:
-        CameraPosition(target: LatLng(-21.2621781, -48.4975432), zoom: 12),
+            CameraPosition(target: LatLng(-21.2621781, -48.4975432), zoom: 12),
         onMapCreated: _onMapCreated,
         markers: _markers.values.toSet(),
-
       ),
     );
   }
@@ -338,5 +346,4 @@ class MapaTurismoState extends State<MapaTurismo> {
       bearing: 45.0,
     )));
   }
-
 }
