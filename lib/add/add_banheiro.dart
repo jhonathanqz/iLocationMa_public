@@ -31,10 +31,10 @@ class AddBanheiro extends StatefulWidget {
 }
 
 class _AddBanheiroState extends State<AddBanheiro> {
-  TextEditingController _controllerNome = TextEditingController();
-  TextEditingController _controllerLocal = TextEditingController();
+  TextEditingController controllerNome = TextEditingController();
+  TextEditingController controllerLocal = TextEditingController();
   TextEditingController controllerEnd = TextEditingController();
-  TextEditingController _controllerObs = TextEditingController();
+  TextEditingController controllerObs = TextEditingController();
 
   String locationMessage = '';
   var latDevice;
@@ -53,10 +53,10 @@ class _AddBanheiroState extends State<AddBanheiro> {
 
   _validarCampos() {
     //Recupera dados dos campos
-    String nome = _controllerNome.text;
-    String local = _controllerLocal.text;
+    String nome = controllerNome.text;
+    String local = controllerLocal.text;
     String end = controllerEnd.text;
-    String obs = _controllerObs.text;
+    String obs = controllerObs.text;
 
     AddPaginas loc = AddPaginas();
     loc.nome = nome;
@@ -184,12 +184,12 @@ class _AddBanheiroState extends State<AddBanheiro> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        textFieldd(_controllerNome, Icons.person, "Nome: ",
+                        textFieldd(controllerNome, Icons.person, "Nome: ",
                             "Seu Nome"),
                         SizedBox(
                           height: 16,
                         ),
-                        textFieldd(_controllerLocal, Icons.location_on,
+                        textFieldd(controllerLocal, Icons.location_on,
                             "Local: ", "Nome do Local"),
                         SizedBox(
                           height: 16,
@@ -435,7 +435,7 @@ class _AddBanheiroState extends State<AddBanheiro> {
                           ],
                         ),
                         textFieldd(
-                            _controllerObs,
+                            controllerObs,
                             FontAwesomeIcons.edit,
                             "Observação: ",
                             "Alguma observação sobre o uso do banheiro?"),
@@ -443,13 +443,14 @@ class _AddBanheiroState extends State<AddBanheiro> {
                           padding: EdgeInsets.symmetric(vertical: 20),
                           child: FlatButton(
                             onPressed: () {
-                              if (_controllerLocal.text == '' ||
-                                  _controllerNome.text == '' ||
+                              if (controllerLocal.text == '' ||
+                                  controllerNome.text == '' ||
                                   controllerEnd.text == '') {
                                 _onAtention();
                               } else {
                                 _onSuccess();
                                 _validarCampos();
+                                zerarController();
                                 dialogLoc(MyMapaBanheiro());
                               }
                             },
@@ -569,5 +570,11 @@ class _AddBanheiroState extends State<AddBanheiro> {
       ),
       androidBarrierDismissible: true,
     );
+  }
+    void zerarController() {
+    controllerEnd.text='';
+    controllerNome.text='';
+    controllerLocal.text='';
+    controllerObs.text='';
   }
 }

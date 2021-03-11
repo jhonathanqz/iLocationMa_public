@@ -34,6 +34,12 @@ class MapaHospital extends StatefulWidget {
 }
 
 class MapaHospitalState extends State<MapaHospital> {
+
+  //Firebase para os Boxes
+  var snapshots = FirebaseFirestore.instance.collection('markershosp').snapshots();
+
+  var urlReserva = 'https://firebasestorage.googleapis.com/v0/b/ilocationma-76ead.appspot.com/o/icones%2Ficones%20base%2Fhospital1.png?alt=media&token=9ec2f08d-37b6-4f80-be26-1464b73a6c9c';
+
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -122,88 +128,103 @@ class MapaHospitalState extends State<MapaHospital> {
     });
   }
 
-  Widget _containerCard(
-      String _image, double lat, double lng, String restaurantName) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
-      child: _boxes(_image, lat, lng, restaurantName),
-    );
-  }
-
   Widget _buildContainer() {
     return Align(
       alignment: Alignment.bottomLeft,
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20.0),
         height: 150.0,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            _containerCard(
-                "https://sengece.org.br/wp-content/uploads/2020/04/unimed-logo-1-2.png",
-                -21.264381,
-                -48.5003027,
-                "Unimed"),
-            _containerCard(
-                "https://www.hospitalmatao.com.br/wp-content/uploads/2018/11/sistema_vida.png",
-                -21.2654096,
-                -48.5021581,
-                "Sta Casa M. Alto"),
-            _containerCard(
-                "https://www.hospitaldecruzilia.com.br/site/images/hospital/prontosocorro.jpg",
-                -21.2645631,
-                -48.5020836,
-                "Pronto Socorro Municipal"),
-          ],
-        ),
+        child: _boxesStream(),
       ),
     );
   }
 
-  Widget _boxes(String _image, double lat, double lng, String restaurantName) {
-    return GestureDetector(
-      onTap: () {
-        _gotoLocation(lat, lng);
-        launch("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+Widget _boxesStream() {
+    return StreamBuilder(
+      stream: snapshots,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<QuerySnapshot> snapshot,
+      ) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Erro: ${snapshot.error}'),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        if (snapshot.data.docs.length == 0) {
+          return Center(
+            child: Text('Não há nenhum local cadastrado no momento'),
+          );
+        }
+
+        return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: snapshot.data.docs.length,
+          itemBuilder: (BuildContext context, int i) {
+            var doc = snapshot.data.docs[i];
+            var item = doc.data();
+            var lat = item['lat'];
+            var lng = item['lng'];
+
+            //***BOXES DE CARDS AQUI****** */
+            return Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: GestureDetector(
+                onTap: () {
+                  _gotoLocation(item['lat'], item['lng']);
+                  launch(
+                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                },
+                child: Container(
+                  child: new FittedBox(
+                    child: Material(
+                        color: Colors.white,
+                        elevation: 14.0,
+                        borderRadius: BorderRadius.circular(24.0),
+                        shadowColor: Colors.amber,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              width: 180,
+                              height: 200,
+                              child: ClipRRect(
+                                borderRadius: new BorderRadius.circular(24.0),
+                                child: Image(
+                                  fit: BoxFit.fill,
+                                  image: NetworkImage(item['url'] ?? urlReserva),
+                                  loadingBuilder: (context, child, progress) {
+                                    return progress == null
+                                        ? child
+                                        : CircularProgressIndicator(
+                                            backgroundColor: Colors.blue,
+                                          );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: myDetailsContainer1(item['name']),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
       },
-      child: Container(
-        child: new FittedBox(
-          child: Material(
-              color: Colors.white,
-              elevation: 14.0,
-              borderRadius: BorderRadius.circular(24.0),
-              shadowColor: Colors.blue,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    width: 180,
-                    height: 200,
-                    child: ClipRRect(
-                      borderRadius: new BorderRadius.circular(24.0),
-                      child: Image(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(_image),
-                        loadingBuilder: (context, child, progress) {
-                          return progress == null
-                              ? child
-                              : CircularProgressIndicator(
-                                  backgroundColor: Colors.blue,
-                                );
-                        },
-                      ),
-                    ),
-                  ),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: myDetailsContainer1(restaurantName),
-                    ),
-                  ),
-                ],
-              )),
-        ),
-      ),
     );
   }
 
@@ -240,7 +261,7 @@ class MapaHospitalState extends State<MapaHospital> {
           children: <Widget>[
             Container(
                 child: Text(
-              "4.1",
+              '',
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 18.0,

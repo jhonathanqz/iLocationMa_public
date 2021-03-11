@@ -37,6 +37,13 @@ class MapaCulinaria extends StatefulWidget {
 }
 
 class MapaCulinariaState extends State<MapaCulinaria> {
+
+//Firebase para os boxes
+  var snapshots = FirebaseFirestore.instance.collection('markersrest').snapshots();
+
+  var urlReserva = 'https://firebasestorage.googleapis.com/v0/b/ilocationma-76ead.appspot.com/o/icones%2Ficones%20base%2Fculinaria1.png?alt=media&token=3a4ccde7-e39a-453d-b970-9a0fb2caaa74';
+
+
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -194,118 +201,103 @@ class MapaCulinariaState extends State<MapaCulinaria> {
     });
   }
 
-  Widget _containerCard(
-      String _image, double lat, double lng, String restaurantName) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
-      child: _boxes(_image, lat, lng, restaurantName),
-    );
-  }
-
   Widget _buildContainer() {
     return Align(
       alignment: Alignment.bottomLeft,
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20.0),
         height: 150.0,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            _containerCard(
-                "https://www.inglesthehouse.com.br/wp-content/uploads/2019/06/Sorvete-Cremoso.jpg",
-                -21.262055,
-                -48.4974041,
-                "Sorveteria Cremoso"),
-            _containerCard(
-                "https://www.codemoney.com.br/site2017/wp-content/uploads/2018/12/porque-o-subway-tem-esse-nome-1600x800-c-center.jpg",
-                -21.2625026,
-                -48.4971678,
-                "Subway"),
-            _containerCard(
-                "https://10619-2.s.cdn12.com/rests/original/314_507820567.jpg",
-                -21.262197,
-                -48.49747,
-                "Botequeim do Herculano"),
-            _containerCard(
-                "https://media-cdn.tripadvisor.com/media/photo-s/0d/ec/91/5d/fachada-monte-alto.jpg",
-                -21.2646767,
-                -48.5062972,
-                "Vesúvio"),
-            _containerCard(
-                "https://10619-2.s.cdn12.com/rests/small/w312/h280/332_508893226.jpg",
-                -21.261274,
-                -48.4900335,
-                "Rest. do Abril"),
-            _containerCard(
-                "https://static-images.ifood.com.br/image/upload//logosgde/201812221118_37f6b14c-4ca9-464b-aa0e-c40795ecf203.jpg",
-                -21.2662749,
-                -48.5026316,
-                "Pizzaria La' Sorella"),
-            _containerCard(
-                "https://www.dinapolipremium.com.br/img/logo_dinapoli.png",
-                -21.2618135,
-                -48.4993848,
-                "Di' Napoli"),
-            _containerCard(
-                "https://1.bp.blogspot.com/-83-kmZO1hyo/VRQPpjN5k2I/AAAAAAAAFI4/-FbsV1GKlAw/s1600/LOGO%2BRESTAURANTE%2BDO%2BDED%C3%83O%2Bcdr.jpg",
-                -21.2602485,
-                -48.494151,
-                "Rest. Dedão"),
-            _containerCard(
-                "https://i.ytimg.com/vi/UnlmNxvejNE/maxresdefault.jpg",
-                -21.2613385,
-                -48.4987374,
-                "Armazém Santo Onofre"),
-          ],
-        ),
+        child: _boxesStream(),
       ),
     );
   }
 
-  Widget _boxes(String _image, double lat, double lng, String restaurantName) {
-    return GestureDetector(
-      onTap: () {
-        _gotoLocation(lat, lng);
-        launch("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+Widget _boxesStream() {
+    return StreamBuilder(
+      stream: snapshots,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<QuerySnapshot> snapshot,
+      ) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Erro: ${snapshot.error}'),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        if (snapshot.data.docs.length == 0) {
+          return Center(
+            child: Text('Não há nenhum local cadastrado no momento'),
+          );
+        }
+
+        return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: snapshot.data.docs.length,
+          itemBuilder: (BuildContext context, int i) {
+            var doc = snapshot.data.docs[i];
+            var item = doc.data();
+            var lat = item['lat'];
+            var lng = item['lng'];
+
+            //***BOXES DE CARDS AQUI****** */
+            return Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: GestureDetector(
+                onTap: () {
+                  _gotoLocation(item['lat'], item['lng']);
+                  launch(
+                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                },
+                child: Container(
+                  child: new FittedBox(
+                    child: Material(
+                        color: Colors.white,
+                        elevation: 14.0,
+                        borderRadius: BorderRadius.circular(24.0),
+                        shadowColor: Colors.amber,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              width: 180,
+                              height: 200,
+                              child: ClipRRect(
+                                borderRadius: new BorderRadius.circular(24.0),
+                                child: Image(
+                                  fit: BoxFit.fill,
+                                  image: NetworkImage(item['url'] ?? urlReserva),
+                                  loadingBuilder: (context, child, progress) {
+                                    return progress == null
+                                        ? child
+                                        : CircularProgressIndicator(
+                                            backgroundColor: Colors.blue,
+                                          );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: myDetailsContainer1(item['name']),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
       },
-      child: Container(
-        child: new FittedBox(
-          child: Material(
-              color: Colors.white,
-              elevation: 14.0,
-              borderRadius: BorderRadius.circular(24.0),
-              shadowColor: Colors.orange,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    width: 180,
-                    height: 200,
-                    child: ClipRRect(
-                      borderRadius: new BorderRadius.circular(24.0),
-                      child: Image(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(_image),
-                        loadingBuilder: (context, child, progress) {
-                          return progress == null
-                              ? child
-                              : CircularProgressIndicator(
-                                  backgroundColor: Colors.blue,
-                                );
-                        },
-                      ),
-                    ),
-                  ),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: myDetailsContainer1(restaurantName),
-                    ),
-                  ),
-                ],
-              )),
-        ),
-      ),
     );
   }
 
@@ -342,7 +334,7 @@ class MapaCulinariaState extends State<MapaCulinaria> {
           children: <Widget>[
             Container(
                 child: Text(
-              "5.0",
+              '',
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 18.0,

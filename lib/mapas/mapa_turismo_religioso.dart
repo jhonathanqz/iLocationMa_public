@@ -34,6 +34,12 @@ class MapaTurismoReligioso extends StatefulWidget {
 }
 
 class MapaTurismoReligiosoState extends State<MapaTurismoReligioso> {
+
+   //Firebase para os Boxes
+  var snapshots = FirebaseFirestore.instance.collection('markerstur_religioso').snapshots();
+
+  var urlReserva = 'https://firebasestorage.googleapis.com/v0/b/ilocationma-76ead.appspot.com/o/icones%2Ficones%20base%2Fturismo3.png?alt=media&token=a0c97b08-b5ed-4d66-97a4-9a355a8a6b8a';
+
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -193,105 +199,103 @@ class MapaTurismoReligiosoState extends State<MapaTurismoReligioso> {
     });
   }
 
-  Widget _containerCard(String _image, double lat, double lng,
-      String restaurantName, String restaurantName2) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
-      child: _boxes(_image, lat, lng, restaurantName, restaurantName2),
-    );
-  }
-
   Widget _buildContainer() {
     return Align(
       alignment: Alignment.bottomLeft,
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20.0),
         height: 150.0,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            _containerCard(
-                "https://live.staticflickr.com/1138/838278909_4ae086333b_z.jpg",
-                -21.2594065,
-                -48.4912206,
-                "Mausoleu Menina Izildinha",
-                "Turismo Religioso"),
-            _containerCard(
-                "https://photos.wikimapia.org/p/00/00/21/19/51_big.jpg",
-                -21.261663,
-                -48.4964844,
-                "Paróquia Senhor Bom Jesus Monte Alto",
-                "Turismo Religioso"),
-            _containerCard(
-                "https://mapio.net/images-p/39927332.jpg",
-                -21.2369708,
-                -48.6449736,
-                "Santuário Nossa Senhora da Conceição Montesina",
-                "Turismo Religioso"),
-            _containerCard(
-                "https://docplayer.com.br/docs-images/68/59269135/images/56-0.jpg",
-                -21.2550297,
-                -48.5063877,
-                "Santuário Nossa Senhora do Rosário de Fátima",
-                "Turismo Religioso"),
-            _containerCard(
-                "https://upload.wikimedia.org/wikipedia/commons/e/ee/Capela_de_Santa_Luzia_-_Morrinho_de_Santa_Luzia_-_Monte_Alto_-_panoramio.jpg",
-                -21.2140038,
-                -48.585567,
-                "Capela de Santa Luzia",
-                "Turismo Religioso"),
-          ],
-        ),
+        child: _boxesStream(),
       ),
     );
   }
 
-  Widget _boxes(String _image, double lat, double lng, String restaurantName,
-      String restaurantName2) {
-    return GestureDetector(
-      onTap: () {
-        _gotoLocation(lat, lng);
-        launch("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+  Widget _boxesStream() {
+    return StreamBuilder(
+      stream: snapshots,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<QuerySnapshot> snapshot,
+      ) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Erro: ${snapshot.error}'),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        if (snapshot.data.docs.length == 0) {
+          return Center(
+            child: Text('Não há nenhum local cadastrado no momento'),
+          );
+        }
+
+        return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: snapshot.data.docs.length,
+          itemBuilder: (BuildContext context, int i) {
+            var doc = snapshot.data.docs[i];
+            var item = doc.data();
+            var lat = item['lat'];
+            var lng = item['lng'];
+
+            //***BOXES DE CARDS AQUI****** */
+            return Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: GestureDetector(
+                onTap: () {
+                  _gotoLocation(item['lat'], item['lng']);
+                  launch(
+                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                },
+                child: Container(
+                  child: new FittedBox(
+                    child: Material(
+                        color: Colors.white,
+                        elevation: 14.0,
+                        borderRadius: BorderRadius.circular(24.0),
+                        shadowColor: Colors.amber,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              width: 180,
+                              height: 200,
+                              child: ClipRRect(
+                                borderRadius: new BorderRadius.circular(24.0),
+                                child: Image(
+                                  fit: BoxFit.fill,
+                                  image: NetworkImage(item['url'] ?? urlReserva),
+                                  loadingBuilder: (context, child, progress) {
+                                    return progress == null
+                                        ? child
+                                        : CircularProgressIndicator(
+                                            backgroundColor: Colors.blue,
+                                          );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: myDetailsContainer1(item['name'], item['address']),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
       },
-      child: Container(
-        child: new FittedBox(
-          child: Material(
-              color: Colors.white,
-              elevation: 14.0,
-              borderRadius: BorderRadius.circular(24.0),
-              shadowColor: Colors.green[500],
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    width: 180,
-                    height: 200,
-                    child: ClipRRect(
-                      borderRadius: new BorderRadius.circular(24.0),
-                      child: Image(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(_image),
-                        loadingBuilder: (context, child, progress) {
-                          return progress == null
-                              ? child
-                              : CircularProgressIndicator(
-                                  backgroundColor: Colors.blue,
-                                );
-                        },
-                      ),
-                    ),
-                  ),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child:
-                          myDetailsContainer1(restaurantName, restaurantName2),
-                    ),
-                  ),
-                ],
-              )),
-        ),
-      ),
     );
   }
 
@@ -328,7 +332,7 @@ class MapaTurismoReligiosoState extends State<MapaTurismoReligioso> {
           children: <Widget>[
             Container(
                 child: Text(
-              "5.0",
+              '',
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 18.0,

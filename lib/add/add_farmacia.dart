@@ -496,6 +496,7 @@ class _AddFarmaciaState extends State<AddFarmacia> {
                               } else {
                                 _onSuccess();
                                 _validarCampos();
+                                zerarController();
                                 dialogLoc(MyMapaFarmacia());
                                 
                               }
@@ -616,5 +617,11 @@ class _AddFarmaciaState extends State<AddFarmacia> {
       ),
       androidBarrierDismissible: true,
     );
+  }
+      void zerarController() {
+    controllerEnd.text='';
+    _controllerNome.text='';
+    _controllerLocal.text='';
+    _controllerObs.text='';
   }
 }

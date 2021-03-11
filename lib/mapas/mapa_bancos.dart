@@ -29,7 +29,6 @@ class MyMapaBancos extends StatelessWidget {
   }
 }
 
-
 class MapaBancos extends StatefulWidget {
   @override
   MapaBancosState createState() => MapaBancosState();
@@ -37,17 +36,19 @@ class MapaBancos extends StatefulWidget {
 
 class MapaBancosState extends State<MapaBancos> {
 
+  //Firebase para os Boxes
+  var snapshots = FirebaseFirestore.instance.collection('markers').snapshots();
+
+  var urlReserva = 'https://firebasestorage.googleapis.com/v0/b/ilocationma-76ead.appspot.com/o/icones%2Ficones%20base%2Fbancos.png?alt=media&token=422b1570-76ab-4ee4-95c3-cf30f841b063';
+
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
-
-
 
   Completer<GoogleMapController> _controller = Completer();
 
   final Map<String, Marker> _markers = {};
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
-
     var db = FirebaseFirestore.instance;
     QuerySnapshot resultado = await db.collection("markers").get();
 
@@ -64,14 +65,11 @@ class MapaBancosState extends State<MapaBancos> {
             infoWindow: InfoWindow(
                 title: result.name,
                 snippet: result.address,
-                onTap: (){
+                onTap: () {
                   OpenUtil.openMap(result.lat, result.lng);
-
-                }
-            ),
+                }),
             icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueYellow)
-        );
+                BitmapDescriptor.hueYellow));
         _markers[result.name] = marker;
       });
     });
@@ -81,9 +79,7 @@ class MapaBancosState extends State<MapaBancos> {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant<UserModel>(
-        builder: (context, child, model) {
-
+    return ScopedModelDescendant<UserModel>(builder: (context, child, model) {
       return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -91,9 +87,8 @@ class MapaBancosState extends State<MapaBancos> {
           leading: IconButton(
             icon: Icon(FontAwesomeIcons.arrowLeft),
             onPressed: () {
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => MyHomePrincipal()
-              ));
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => MyHomePrincipal()));
             },
           ),
           title: Text("Bancos"),
@@ -108,7 +103,6 @@ class MapaBancosState extends State<MapaBancos> {
                   setState(() {
                     model.verificaLoginMapa(context, AddBancos());
                   });
-
                 },
               ),
             ),
@@ -118,10 +112,8 @@ class MapaBancosState extends State<MapaBancos> {
                 icon: Icon(FontAwesomeIcons.syncAlt),
                 iconSize: 20,
                 onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => MyMapaBancos()
-                  ));
-
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => MyMapaBancos()));
                 },
               ),
             ),
@@ -134,16 +126,8 @@ class MapaBancosState extends State<MapaBancos> {
           ],
         ),
       );
-
     });
   }
-  Widget _containerCard(String _image, double lat, double lng, String restaurantName){
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
-      child: _boxes(_image, lat, lng, restaurantName),
-    );
-  }
-
 
   Widget _buildContainer() {
     return Align(
@@ -151,84 +135,101 @@ class MapaBancosState extends State<MapaBancos> {
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20.0),
         height: 150.0,
-        child: ListView(
+        child: _boxesStream(),
+      ),
+    );
+  }
+
+  Widget _boxesStream() {
+    return StreamBuilder(
+      stream: snapshots,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<QuerySnapshot> snapshot,
+      ) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Erro: ${snapshot.error}'),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        if (snapshot.data.docs.length == 0) {
+          return Center(
+            child: Text('Não há nenhum local cadastrado no momento'),
+          );
+        }
+
+        return ListView.builder(
           scrollDirection: Axis.horizontal,
-          children: <Widget>[
+          itemCount: snapshot.data.docs.length,
+          itemBuilder: (BuildContext context, int i) {
+            var doc = snapshot.data.docs[i];
+            var item = doc.data();
+            var lat = item['lat'];
+            var lng = item['lng'];
 
-            _containerCard("https://osepeense.com/wp-content/uploads/2020/08/visao-geral-banco-bradesco.jpg",
-                -21.2631022, -48.4993848,
-                "Banco Bradesco"),
-            _containerCard("https://explosaotricolor.com.br/wp-content/uploads/2020/04/visao-geral-banco-itau.jpg",
-                -21.262389, -48.4954789,
-                "Banco Itaú"),
-            _containerCard("https://polidiomas.com.br/clientes/cursos/santnader.jpg",
-                -21.2627448, -48.4987821,
-                "Banco Santander"),
-            _containerCard("https://www.radioaguasclaras.com.br/wp-content/uploads/2020/04/07132457361259.jpg",
-                -21.2627188, -48.501168,
-                "Banco do Brasil"),
-            _containerCard("https://www.bebedouroshopping.com.br/wp-content/uploads/2016/12/logo_credicitrus.jpg",
-                -21.2628754, -48.5008162,
-                "Banco Sicoob Credicitrus"),
-            _containerCard("https://blog.cedrotech.com/wp-content/uploads/2018/08/sicoob.jpg",
-                -21.262382, -48.4962895,
-                "Banco Sicoob Cocred"),
-            _containerCard("https://upload.wikimedia.org/wikipedia/commons/a/a6/Logomarca_Sicredi.jpg",
-                -21.2610578, -48.4951279,
-                "Banco Sicredi"),
-            _containerCard("https://habicamp.com.br/wp-content/uploads/2019/06/CAIXA.jpeg",
-                -21.2637014, -484965725,
-                "Banco Caixa \nEconômica Federal"),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _boxes(String _image, double lat, double lng, String restaurantName) {
-    return GestureDetector(
-      onTap: () {
-        _gotoLocation(lat, lng);
-        launch("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+            //***BOXES DE CARDS AQUI****** */
+            return Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: GestureDetector(
+                onTap: () {
+                  _gotoLocation(item['lat'], item['lng']);
+                  launch(
+                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                },
+                child: Container(
+                  child: new FittedBox(
+                    child: Material(
+                        color: Colors.white,
+                        elevation: 14.0,
+                        borderRadius: BorderRadius.circular(24.0),
+                        shadowColor: Colors.amber,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              width: 180,
+                              height: 200,
+                              child: ClipRRect(
+                                borderRadius: new BorderRadius.circular(24.0),
+                                child: Image(
+                                  fit: BoxFit.fill,
+                                  image: NetworkImage(item['url'] ?? urlReserva),
+                                  loadingBuilder: (context, child, progress) {
+                                    return progress == null
+                                        ? child
+                                        : CircularProgressIndicator(
+                                            backgroundColor: Colors.blue,
+                                          );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: myDetailsContainer1(item['name']),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
       },
-      child: Container(
-        child: new FittedBox(
-          child: Material(
-              color: Colors.white,
-              elevation: 14.0,
-              borderRadius: BorderRadius.circular(24.0),
-              shadowColor: Colors.amber,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    width: 180,
-                    height: 200,
-                    child: ClipRRect(
-                      borderRadius: new BorderRadius.circular(24.0),
-                      child: Image(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(_image),
-                        loadingBuilder: (context, child, progress) {
-                          return progress == null ? child: CircularProgressIndicator(backgroundColor: Colors.blue,);
-                        },
-                      ),
-                    ),
-                  ),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: myDetailsContainer1(restaurantName),
-                    ),
-                  ),
-                ],
-              )),
-        ),
-      ),
     );
   }
 
-  Widget _containerStars(){
+  Widget _containerStars() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5),
       child: Icon(
@@ -247,54 +248,54 @@ class MapaBancosState extends State<MapaBancos> {
           padding: const EdgeInsets.only(left: 8.0),
           child: Container(
               child: Text(
-                bancosName,
-                style: TextStyle(
-                    color: Colors.blue[900],
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold),
-              )),
+            bancosName,
+            style: TextStyle(
+                color: Colors.blue[900],
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold),
+          )),
         ),
         SizedBox(height: 5.0),
         Container(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Container(
-                    child: Text(
-                      "4.7",
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 18.0,
-                      ),
-                    )),
-                SizedBox(
-                  width: 5,
-                ),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-                _containerStars(),
-              ],
-            )),
-        SizedBox(height: 5.0),
-        Container(
-            child: Text(
-              "Brasil  Monte Alto - SP",
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Container(
+                child: Text(
+              '',
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 18.0,
               ),
             )),
+            SizedBox(
+              width: 5,
+            ),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+            _containerStars(),
+          ],
+        )),
         SizedBox(height: 5.0),
         Container(
             child: Text(
-              "Banco \u00B7 24h",
-              style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold),
-            )),
+          "Brasil  Monte Alto - SP",
+          style: TextStyle(
+            color: Colors.black54,
+            fontSize: 18.0,
+          ),
+        )),
+        SizedBox(height: 5.0),
+        Container(
+            child: Text(
+          "Banco \u00B7 24h",
+          style: TextStyle(
+              color: Colors.black54,
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold),
+        )),
       ],
     );
   }
@@ -307,13 +308,12 @@ class MapaBancosState extends State<MapaBancos> {
         mapType: MapType.normal,
         myLocationEnabled: true,
         initialCameraPosition:
-        CameraPosition(target: LatLng(-21.2621781, -48.4975432), zoom: 13),
+            CameraPosition(target: LatLng(-21.2621781, -48.4975432), zoom: 13),
         onMapCreated: _onMapCreated,
         markers: _markers.values.toSet(),
       ),
     );
   }
-
 
   Future<void> _gotoLocation(double lat, double lng) async {
     final GoogleMapController controller = await _controller.future;
@@ -324,9 +324,4 @@ class MapaBancosState extends State<MapaBancos> {
       bearing: 45.0,
     )));
   }
-
-
 }
-
-
-

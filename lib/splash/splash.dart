@@ -74,11 +74,17 @@ class _SplashState extends State<Splash> {
     Future.delayed(Duration(seconds: 3)).then((_) {
       auth.authStateChanges().listen((User user) {
         if (user == null) {
-          grantPermissions();
+          setState(() {
+            grantPermissions();
+          });
+          
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => MyHomePrincipal()));
         } else {
-          grantPermissions();
+          setState(() {
+            grantPermissions();
+          });
+          
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => MyHomePrincipal()));
         }
@@ -91,14 +97,6 @@ class _SplashState extends State<Splash> {
         await Permission.location.isDenied) {
       await Permission.location.request();
     }
-    if (await Permission.locationAlways.isUndetermined ||
-        await Permission.locationAlways.isDenied) {
-      await Permission.locationAlways.request();
-    }
-    if (await Permission.locationWhenInUse.isUndetermined ||
-        await Permission.locationWhenInUse.isDenied) {
-      await Permission.locationWhenInUse.request();
-    }
     if (await Permission.camera.isUndetermined ||
         await Permission.camera.isDenied) {
       await Permission.camera.request();
@@ -106,6 +104,14 @@ class _SplashState extends State<Splash> {
     if (await Permission.storage.isUndetermined ||
         await Permission.storage.isDenied) {
       await Permission.storage.request();
+    }
+    if (await Permission.locationAlways.isUndetermined ||
+        await Permission.locationAlways.isDenied) {
+      await Permission.locationAlways.request();
+    }
+    if (await Permission.locationWhenInUse.isUndetermined ||
+        await Permission.locationWhenInUse.isDenied) {
+      await Permission.locationWhenInUse.request();
     }
   }
 }

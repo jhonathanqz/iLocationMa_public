@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,11 +15,11 @@ import 'package:ilocationma/splash/splash_farmacia.dart';
 import 'package:ilocationma/splash/splash_hospital.dart';
 import 'package:ilocationma/splash/splash_posto.dart';
 import 'package:ilocationma/splash/splash_turismo.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:ilocationma/widgets/platform_alert_dialog.dart';
+import 'package:ilocationma/widgets/platform_dialog_button_action.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'SobreMonteAlto.dart';
-
-void main() => runApp(MyHomePrincipal());
+import 'package:connectivity/connectivity.dart';
 
 class MyHomePrincipal extends StatelessWidget {
   // This widget is the root of your application.
@@ -40,8 +42,23 @@ class HomePrincipal extends StatefulWidget {
 
 class _HomePrincipalState extends State<HomePrincipal> {
 
+
+  var connected;
+
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  
+  _checkInternetConnection() async{
+    var result = await Connectivity().checkConnectivity();
+    if(result == ConnectivityResult.none){
+      connected='2';
+    }else if (result == ConnectivityResult.mobile){
+      connected='1';
+    }else if(result == ConnectivityResult.wifi){
+      connected='1';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,37 +165,37 @@ class _HomePrincipalState extends State<HomePrincipal> {
                       child: Container(
                           height: MediaQuery.of(context).size.height - 300.0,
                           child: ListView(children: [
-                            _buildFoodItem('assets/hospital1.png', 'Hospital',
+                            _buildHomeItem('assets/hospital1.png', 'Hospital',
                                 SplashHosp()),
                             SizedBox(
                               height: 15,
                             ),
-                            _buildFoodItem('assets/farmacia1.png', 'Farmácia',
+                            _buildHomeItem('assets/farmacia1.png', 'Farmácia',
                                 SplashFarm()),
                             SizedBox(
                               height: 15,
                             ),
-                            _buildFoodItem(
+                            _buildHomeItem(
                                 'assets/banco3.png', 'Bancos', SplashBancos()),
                             SizedBox(
                               height: 15,
                             ),
-                            _buildFoodItem('assets/culinaria1.png',
+                            _buildHomeItem('assets/culinaria1.png',
                                 'Alimentação', SplashCulinaria()),
                             SizedBox(
                               height: 15,
                             ),
-                            _buildFoodItem('assets/turismo3.png', 'Turismo',
+                            _buildHomeItem('assets/turismo3.png', 'Turismo',
                                 SplashTurismo()),
                             SizedBox(
                               height: 15,
                             ),
-                            _buildFoodItem('assets/posto1.png',
+                            _buildHomeItem('assets/posto1.png',
                                 'Posto de Combustível', SplashPosto()),
                             SizedBox(
                               height: 15,
                             ),
-                            _buildFoodItem('assets/banheiro1.png', 'Banheiros',
+                            _buildHomeItem('assets/banheiro1.png', 'Banheiros',
                                 SplashBan()),
                             SizedBox(
                               height: 15,
@@ -242,7 +259,7 @@ class _HomePrincipalState extends State<HomePrincipal> {
                             SizedBox(
                               height: 15,
                             ),
-                            _buildFoodItem('assets/mont3.png', 'Sobre a Cidade',
+                            _buildHomeItem('assets/mont3.png', 'Sobre a Cidade',
                                 MySobreCidade()),
                             SizedBox(
                               height: 15,
@@ -305,13 +322,19 @@ class _HomePrincipalState extends State<HomePrincipal> {
     );
   }
 
-  Widget _buildFoodItem(String imgPath, String foodName, _controller) {
+  Widget _buildHomeItem(String imgPath, String nameController, _controller, {connectivityResult}) {
     return Padding(
       padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0, bottom: 10),
       child: InkWell(
         onTap: () {
-          Navigator.of(context)
+          _checkInternetConnection();
+          if(connected=='1'){
+            Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => _controller));
+          }if(connected=='2'){
+            alertConnection();
+          }
+          
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -330,7 +353,7 @@ class _HomePrincipalState extends State<HomePrincipal> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      foodName,
+                      nameController,
                       style: TextStyle(
                           fontFamily: 'Montserrat',
                           fontSize: 17.0,
@@ -344,12 +367,28 @@ class _HomePrincipalState extends State<HomePrincipal> {
                 icon: Icon(Icons.location_on),
                 color: Colors.black,
                 onPressed: () {
-                  Navigator.of(context).push(
+                  _checkInternetConnection();
+                  if(connected=='1'){
+                    Navigator.of(context).push(
                       MaterialPageRoute(builder: (context) => _controller));
+                  }if(connected=='2'){
+                    alertConnection();
+                  }
+                  
                 }),
           ],
         ),
       ),
     );
+  }
+  void alertConnection() {
+    showPlatformDialog(context: context, 
+    builder: (context) => PlatformAlertDialog(
+      title: 'Conexão de rede',
+      content: Text('Por favor verifique sua conexão com a internet antes de prosseguir.'),
+      actions: [
+        destructiveAction('Voltar'),
+      ],
+    ));
   }
 }

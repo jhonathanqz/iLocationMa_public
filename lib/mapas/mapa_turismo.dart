@@ -33,6 +33,13 @@ class MapaTurismo extends StatefulWidget {
 }
 
 class MapaTurismoState extends State<MapaTurismo> {
+
+  //Firebase para os Boxes
+  var snapshots = FirebaseFirestore.instance.collection('markerstur').snapshots();
+
+  var urlReserva = 'https://firebasestorage.googleapis.com/v0/b/ilocationma-76ead.appspot.com/o/icones%2Ficones%20base%2Fturismo3.png?alt=media&token=a0c97b08-b5ed-4d66-97a4-9a355a8a6b8a';
+
+
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -125,117 +132,103 @@ class MapaTurismoState extends State<MapaTurismo> {
     });
   }
 
-  Widget _containerCard(String _image, double lat, double lng,
-      String restaurantName, String restaurantName2) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
-      child: _boxes(_image, lat, lng, restaurantName, restaurantName2),
-    );
-  }
-
   Widget _buildContainer() {
     return Align(
       alignment: Alignment.bottomLeft,
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20.0),
         height: 150.0,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            _containerCard(
-                "https://media-cdn.tripadvisor.com/media/photo-s/0b/5d/3a/9d/praca-dr-luiz-zacharias.jpg",
-                -21.2621781,
-                -48.4975432,
-                "Praça Dr Luiz Zacharias de Lima",
-                "Turismo Local"),
-            _containerCard(
-                "https://s2.glbimg.com/1AbbGDkTx2R5fT13caRbCMR-754=/0x0:1700x1065/1008x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2018/C/k/fLqp0NRnulTAmdXhKBNw/dsc1470.jpg",
-                -21.2589509,
-                -48.4992249,
-                "Museu de Paleontologia",
-                "Turismo Local"),
-            _containerCard(
-                "https://s2.glbimg.com/UTmRS6YWIQDMLYBvtGYkDrWIpMs=/0x0:1700x1063/1008x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2018/p/e/ygQEaeQLmZFKgSaVyzgw/dsc-0169.jpg",
-                -21.2589509,
-                -48.4992249,
-                "Museu de Arqueologia",
-                "Turismo Local"),
-            _containerCard(
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Museu_hist%C3%B3rico_de_Monte_Alto_-_R%C3%A1dios_antigos_-_panoramio.jpg/1200px-Museu_hist%C3%B3rico_de_Monte_Alto_-_R%C3%A1dios_antigos_-_panoramio.jpg",
-                -21.2589509,
-                -48.4992249,
-                "Museu Histórico",
-                "Turismo Local"),
-            _containerCard(
-                "https://cdn.ocp.news/2019/10/biblioteca-premia-livros.jpg",
-                -21.2589509,
-                -48.4992249,
-                "Biblioteca Municipal",
-                "Turismo Local"),
-            _containerCard(
-                "https://www.revide.com.br/media/upload/noticias/2016/07/12/cinema-20160712.jpg",
-                -21.2589509,
-                -48.4992249,
-                "Cinema Cine Monte Alto",
-                "Turismo Local"),
-            _containerCard(
-                "https://www.baressp.com.br/bares/fotos/bancarios_fachada.jpg",
-                -21.2853697,
-                -48.488186,
-                "Campestre Clube Monte Alto",
-                "Turismo Local"),
-          ],
-        ),
+        child: _boxesStream(),
       ),
     );
   }
 
-  Widget _boxes(String _image, double lat, double lng, String restaurantName,
-      String restaurantName2) {
-    return GestureDetector(
-      onTap: () {
-        _gotoLocation(lat, lng);
-        launch("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+ Widget _boxesStream() {
+    return StreamBuilder(
+      stream: snapshots,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<QuerySnapshot> snapshot,
+      ) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Erro: ${snapshot.error}'),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        if (snapshot.data.docs.length == 0) {
+          return Center(
+            child: Text('Não há nenhum local cadastrado no momento'),
+          );
+        }
+
+        return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: snapshot.data.docs.length,
+          itemBuilder: (BuildContext context, int i) {
+            var doc = snapshot.data.docs[i];
+            var item = doc.data();
+            var lat = item['lat'];
+            var lng = item['lng'];
+
+            //***BOXES DE CARDS AQUI****** */
+            return Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: GestureDetector(
+                onTap: () {
+                  _gotoLocation(item['lat'], item['lng']);
+                  launch(
+                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                },
+                child: Container(
+                  child: new FittedBox(
+                    child: Material(
+                        color: Colors.white,
+                        elevation: 14.0,
+                        borderRadius: BorderRadius.circular(24.0),
+                        shadowColor: Colors.amber,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              width: 180,
+                              height: 200,
+                              child: ClipRRect(
+                                borderRadius: new BorderRadius.circular(24.0),
+                                child: Image(
+                                  fit: BoxFit.fill,
+                                  image: NetworkImage(item['url'] ?? urlReserva),
+                                  loadingBuilder: (context, child, progress) {
+                                    return progress == null
+                                        ? child
+                                        : CircularProgressIndicator(
+                                            backgroundColor: Colors.blue,
+                                          );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: myDetailsContainer1(item['name'], item['address']),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
       },
-      child: Container(
-        child: new FittedBox(
-          child: Material(
-              color: Colors.white,
-              elevation: 14.0,
-              borderRadius: BorderRadius.circular(24.0),
-              shadowColor: Colors.green[500],
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    width: 180,
-                    height: 200,
-                    child: ClipRRect(
-                      borderRadius: new BorderRadius.circular(24.0),
-                      child: Image(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(_image),
-                        loadingBuilder: (context, child, progress) {
-                          return progress == null
-                              ? child
-                              : CircularProgressIndicator(
-                                  backgroundColor: Colors.blue,
-                                );
-                        },
-                      ),
-                    ),
-                  ),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child:
-                          myDetailsContainer1(restaurantName, restaurantName2),
-                    ),
-                  ),
-                ],
-              )),
-        ),
-      ),
     );
   }
 
@@ -272,7 +265,7 @@ class MapaTurismoState extends State<MapaTurismo> {
           children: <Widget>[
             Container(
                 child: Text(
-              "5.0",
+              '',
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 18.0,

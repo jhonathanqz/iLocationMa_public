@@ -426,6 +426,7 @@ class _AddPostoState extends State<AddPosto> {
                               } else {
                                 _onSuccess();
                                 _validarCampos();
+                                zerarController();
                                 dialogLoc(MyMapaPosto());
 
                               }
@@ -546,5 +547,11 @@ class _AddPostoState extends State<AddPosto> {
       ),
       androidBarrierDismissible: true,
     );
+  }
+      void zerarController() {
+    controllerEnd.text='';
+    _controllerNome.text='';
+    _controllerLocal.text='';
+    _controllerObs.text='';
   }
 }

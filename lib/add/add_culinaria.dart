@@ -462,6 +462,7 @@ class _AddCulinariaState extends State<AddCulinaria> {
                               } else {
                                 _onSuccess();
                                 _validarCampos();
+                                zerarController();
                                 dialogLoc(MyMapaCulinaria());
                               }
                             },
@@ -581,6 +582,13 @@ class _AddCulinariaState extends State<AddCulinaria> {
       ),
       androidBarrierDismissible: true,
     );
+  }
+
+    void zerarController() {
+    controllerEnd.text='';
+    _controllerNome.text='';
+    _controllerLocal.text='';
+    _controllerObs.text='';
   }
  
 }

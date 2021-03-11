@@ -473,6 +473,7 @@ class _AddHospitalState extends State<AddHospital> {
                               } else {
                                 _onSuccess();
                                 _validarCampos();
+                                zerarController();
                                 dialogLoc(MyMapaHospital());
 
                               }
@@ -593,5 +594,11 @@ class _AddHospitalState extends State<AddHospital> {
       ),
       androidBarrierDismissible: true,
     );
+  }
+      void zerarController() {
+    controllerEnd.text='';
+    _controllerNome.text='';
+    _controllerLocal.text='';
+    _controllerObs.text='';
   }
 }

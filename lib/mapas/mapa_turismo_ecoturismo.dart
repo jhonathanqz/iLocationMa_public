@@ -33,6 +33,13 @@ class MapaTurismoEcoturismo extends StatefulWidget {
 }
 
 class MapaTurismoEcoturismoState extends State<MapaTurismoEcoturismo> {
+
+  //Firebase para os Boxes
+  var snapshots = FirebaseFirestore.instance.collection('markerstur_ecoturismo').snapshots();
+
+  var urlReserva = 'https://firebasestorage.googleapis.com/v0/b/ilocationma-76ead.appspot.com/o/icones%2Ficones%20base%2Fturismo3.png?alt=media&token=a0c97b08-b5ed-4d66-97a4-9a355a8a6b8a';
+
+
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -122,99 +129,103 @@ class MapaTurismoEcoturismoState extends State<MapaTurismoEcoturismo> {
     });
   }
 
-  Widget _containerCard(String _image, double lat, double lng,
-      String restaurantName, String restaurantName2) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
-      child: _boxes(_image, lat, lng, restaurantName, restaurantName2),
-    );
-  }
-
   Widget _buildContainer() {
     return Align(
       alignment: Alignment.bottomLeft,
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20.0),
         height: 150.0,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            _containerCard(
-                "https://s0.wklcdn.com/image_89/2696705/19848185/12425442Master.jpg",
-                -21.2390185,
-                -48.512899,
-                "Cachoeira Gabiru",
-                "Ecoturismo"),
-            _containerCard(
-                "https://i.ytimg.com/vi/KuNOLVUdQv0/hqdefault.jpg",
-                -21.2819623,
-                -48.5142146,
-                "Gruta do Olho e Cachoeira do Cabelo",
-                "Ecoturismo"),
-            _containerCard(
-                "https://s0.wklcdn.com/image_89/2696705/19848185/12425442Master.jpg",
-                -21.2751084,
-                -48.513199,
-                "cachoeira do jardim california",
-                "Ecoturismo"),
-            _containerCard(
-                "https://i.ytimg.com/vi/4ELZgrOHSWA/hqdefault.jpg",
-                -21.2532535,
-                -48.4882151,
-                "Cachoeira do Rio Turvo",
-                "Ecoturismo"),
-          ],
-        ),
+        child: _boxesStream(),
       ),
     );
   }
 
-  Widget _boxes(String _image, double lat, double lng, String restaurantName,
-      String restaurantName2) {
-    return GestureDetector(
-      onTap: () {
-        _gotoLocation(lat, lng);
-        launch("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+  Widget _boxesStream() {
+    return StreamBuilder(
+      stream: snapshots,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<QuerySnapshot> snapshot,
+      ) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Erro: ${snapshot.error}'),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        if (snapshot.data.docs.length == 0) {
+          return Center(
+            child: Text('Não há nenhum local cadastrado no momento'),
+          );
+        }
+
+        return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: snapshot.data.docs.length,
+          itemBuilder: (BuildContext context, int i) {
+            var doc = snapshot.data.docs[i];
+            var item = doc.data();
+            var lat = item['lat'];
+            var lng = item['lng'];
+
+            //***BOXES DE CARDS AQUI****** */
+            return Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: GestureDetector(
+                onTap: () {
+                  _gotoLocation(item['lat'], item['lng']);
+                  launch(
+                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                },
+                child: Container(
+                  child: new FittedBox(
+                    child: Material(
+                        color: Colors.white,
+                        elevation: 14.0,
+                        borderRadius: BorderRadius.circular(24.0),
+                        shadowColor: Colors.amber,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              width: 180,
+                              height: 200,
+                              child: ClipRRect(
+                                borderRadius: new BorderRadius.circular(24.0),
+                                child: Image(
+                                  fit: BoxFit.fill,
+                                  image: NetworkImage(item['url'] ?? urlReserva),
+                                  loadingBuilder: (context, child, progress) {
+                                    return progress == null
+                                        ? child
+                                        : CircularProgressIndicator(
+                                            backgroundColor: Colors.blue,
+                                          );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: myDetailsContainer1(item['name'], item['address']),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
       },
-      child: Container(
-        child: new FittedBox(
-          child: Material(
-              color: Colors.white,
-              elevation: 14.0,
-              borderRadius: BorderRadius.circular(24.0),
-              shadowColor: Colors.green[500],
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    width: 180,
-                    height: 200,
-                    child: ClipRRect(
-                      borderRadius: new BorderRadius.circular(24.0),
-                      child: Image(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(_image),
-                        loadingBuilder: (context, child, progress) {
-                          return progress == null
-                              ? child
-                              : CircularProgressIndicator(
-                                  backgroundColor: Colors.blue,
-                                );
-                        },
-                      ),
-                    ),
-                  ),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child:
-                          myDetailsContainer1(restaurantName, restaurantName2),
-                    ),
-                  ),
-                ],
-              )),
-        ),
-      ),
     );
   }
 
@@ -251,7 +262,7 @@ class MapaTurismoEcoturismoState extends State<MapaTurismoEcoturismo> {
           children: <Widget>[
             Container(
                 child: Text(
-              "5.0",
+              '',
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 18.0,

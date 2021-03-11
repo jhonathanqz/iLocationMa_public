@@ -523,6 +523,7 @@ class _AddTurismoState extends State<AddTurismo> {
                               } else {
                                 _onSuccess();
                                 _validarCampos();
+                                zerarController();
                                 dialogLoc(MyMapaTurismo());
 
                               }
@@ -643,5 +644,11 @@ class _AddTurismoState extends State<AddTurismo> {
       ),
       androidBarrierDismissible: true,
     );
+  }
+      void zerarController() {
+    controllerEnd.text='';
+    _controllerNome.text='';
+    _controllerLocal.text='';
+    _controllerObs.text='';
   }
 }

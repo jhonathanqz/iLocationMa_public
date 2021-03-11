@@ -34,6 +34,12 @@ class MapaPosto extends StatefulWidget {
 }
 
 class MapaPostoState extends State<MapaPosto> {
+
+  //Firebase para os Boxes
+  var snapshots = FirebaseFirestore.instance.collection('markersposto').snapshots();
+
+  var urlReserva = 'https://firebasestorage.googleapis.com/v0/b/ilocationma-76ead.appspot.com/o/icones%2Ficones%20base%2Fposto1.png?alt=media&token=0eceb62e-8757-4e73-a370-8f566703c77a';
+
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -125,13 +131,7 @@ class MapaPostoState extends State<MapaPosto> {
     });
   }
 
-  Widget _containerCard(
-      String _image, double lat, double lng, String restaurantName) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
-      child: _boxes(_image, lat, lng, restaurantName),
-    );
-  }
+
 
   Widget _buildContainer() {
     return Align(
@@ -139,99 +139,97 @@ class MapaPostoState extends State<MapaPosto> {
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20.0),
         height: 150.0,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            _containerCard(
-                "https://1.bp.blogspot.com/-zFbwODxhzN4/XU2OD3gY-VI/AAAAAAAANTw/GgdkvCCfoPw-mskdln21yQiiJDVH1jSbwCLcBGAs/s1600/posto%2Bcidade%2Bso4.jpg",
-                -21.2641637,
-                -48.5007975,
-                "Auto Posto Cidade Sonho"),
-            _containerCard(
-                "https://posto.clubpetro.com.br/projeto/clube-petro/arquivos/posto/postojotaw/arquivos/ebb2f477a45ac5f1e3c22f7868860a25.jpg",
-                -21.2618128,
-                -48.4932725,
-                "Auto Posto JW"),
-            _containerCard(
-                "https://www.brasquimica.ind.br/sistema/public/img/images/copercana.png",
-                -21.2619789,
-                -48.4943071,
-                "Auto Posto Copercana"),
-            _containerCard(
-                "https://www.br.com.br/pc/rede-de-postos/busca/!ut/p/z1/04_Sj9CPykssy0xPLMnMz0vMAfIjo8zi3Q183A39TQy93N39TQ0cA01DLb28nA3d_cz0w1EV-LuaWhg4OhqYhVmEGBoZBBnqRxGj3wAHcDQgTj8eBVH4jQ_Xj0K1wt_UxdnA0czVx8sjyMXIwMgYQwGmFwlZUpAbGhphkOkJAPwM0hk!/img/tottem-posto-interna.jpg",
-                -21.2638044,
-                -48.503762,
-                "Auto Posto Pignatta"),
-            _containerCard(
-                "https://spaceks.net/sites/radiowebasertaneja.com/images/summer/user_589209863.jpg",
-                -21.2654914,
-                -48.4770954,
-                "Auto Posto Faveri"),
-            _containerCard(
-                "https://s2.glbimg.com/dlWcfTwB_KUkmNsCgchJ-XoUYNE=/512x320/smart/e.glbimg.com/og/ed/f/original/2017/05/10/fachada-para-posto-ipiranga.jpg",
-                -21.2608512,
-                -48.5004927,
-                "Auto Posto Bela Vista"),
-            _containerCard(
-                "https://static.wixstatic.com/media/e53766_8a0bac25c0d248bcac5791a6eaff146c~mv2_d_2880_1440_s_2.jpg/v1/fill/w_2560,h_1280,fp_0.50_0.50,q_90/e53766_8a0bac25c0d248bcac5791a6eaff146c~mv2_d_2880_1440_s_2.jpg",
-                -21.2619114,
-                -48.4656251,
-                "Posto Estoril"),
-            _containerCard(
-                "https://images.vexels.com/media/users/3/147719/isolated/preview/8cf7b8ea32906351a66d29dad68fd302-logotipo-de-servi--o-de-posto-de-gasolina-de-carro-by-vexels.png",
-                -21.2589342,
-                -48.4930101,
-                "Auto Posto Monte Alto 1"),
-          ],
-        ),
+        child: _boxesStream(),
       ),
     );
   }
 
-  Widget _boxes(String _image, double lat, double lng, String restaurantName) {
-    return GestureDetector(
-      onTap: () {
-        _gotoLocation(lat, lng);
-        launch("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+  Widget _boxesStream() {
+    return StreamBuilder(
+      stream: snapshots,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<QuerySnapshot> snapshot,
+      ) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Erro: ${snapshot.error}'),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        if (snapshot.data.docs.length == 0) {
+          return Center(
+            child: Text('Não há nenhum local cadastrado no momento'),
+          );
+        }
+
+        return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: snapshot.data.docs.length,
+          itemBuilder: (BuildContext context, int i) {
+            var doc = snapshot.data.docs[i];
+            var item = doc.data();
+            var lat = item['lat'];
+            var lng = item['lng'];
+
+            //***BOXES DE CARDS AQUI****** */
+            return Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: GestureDetector(
+                onTap: () {
+                  _gotoLocation(item['lat'], item['lng']);
+                  launch(
+                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                },
+                child: Container(
+                  child: new FittedBox(
+                    child: Material(
+                        color: Colors.white,
+                        elevation: 14.0,
+                        borderRadius: BorderRadius.circular(24.0),
+                        shadowColor: Colors.amber,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              width: 180,
+                              height: 200,
+                              child: ClipRRect(
+                                borderRadius: new BorderRadius.circular(24.0),
+                                child: Image(
+                                  fit: BoxFit.fill,
+                                  image: NetworkImage(item['url'] ?? urlReserva),
+                                  loadingBuilder: (context, child, progress) {
+                                    return progress == null
+                                        ? child
+                                        : CircularProgressIndicator(
+                                            backgroundColor: Colors.blue,
+                                          );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: myDetailsContainer1(item['name']),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
       },
-      child: Container(
-        child: new FittedBox(
-          child: Material(
-              color: Colors.white,
-              elevation: 14.0,
-              borderRadius: BorderRadius.circular(24.0),
-              shadowColor: Colors.cyan,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    width: 180,
-                    height: 200,
-                    child: ClipRRect(
-                      borderRadius: new BorderRadius.circular(24.0),
-                      child: Image(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(_image),
-                        loadingBuilder: (context, child, progress) {
-                          return progress == null
-                              ? child
-                              : CircularProgressIndicator(
-                                  backgroundColor: Colors.blue,
-                                );
-                        },
-                      ),
-                    ),
-                  ),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: myDetailsContainer1(restaurantName),
-                    ),
-                  ),
-                ],
-              )),
-        ),
-      ),
     );
   }
 
@@ -268,7 +266,7 @@ class MapaPostoState extends State<MapaPosto> {
           children: <Widget>[
             Container(
                 child: Text(
-              "5.0",
+              '',
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 18.0,

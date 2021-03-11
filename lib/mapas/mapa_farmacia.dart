@@ -34,6 +34,12 @@ class MapaFarmacia extends StatefulWidget {
 }
 
 class MapaFarmaciaState extends State<MapaFarmacia> {
+  //Firebase para os boxes
+  var snapshots = FirebaseFirestore.instance.collection('markersfarm').snapshots();
+
+  var urlReserva = 'https://firebasestorage.googleapis.com/v0/b/ilocationma-76ead.appspot.com/o/icones%2Ficones%20base%2Ffarmacia1.png?alt=media&token=fc5ee10c-eb68-4735-9c62-2715aa1ff27b';
+
+
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -183,13 +189,6 @@ class MapaFarmaciaState extends State<MapaFarmacia> {
     });
   }
 
-  Widget _containerCard(
-      String _image, double lat, double lng, String restaurantName) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
-      child: _boxes(_image, lat, lng, restaurantName),
-    );
-  }
 
   Widget _buildContainer() {
     return Align(
@@ -197,169 +196,98 @@ class MapaFarmaciaState extends State<MapaFarmacia> {
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20.0),
         height: 150.0,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            _containerCard(
-                "https://droganossa.net/wp-content/uploads/2018/06/logotipo-dnossa-vertical-01.jpg",
-                -21.2616624,
-                -48.4925371,
-                "Farm. Droga Nossa"),
-            _containerCard(
-                "https://segredosdomundo.r7.com/wp-content/uploads/2020/04/simbolo-da-farmacia-historia-de-onde-surgiu-e-o-significado-2.jpg",
-                -21.01767,
-                -48.2294025,
-                "Farm. Drogaria Monte Alto"),
-            _containerCard(
-                "https://www.listatotal.com.br/logos/redefarmareallogo.png",
-                -21.2508165,
-                -48.5150131,
-                "Farm. Real Farma"),
-            _containerCard(
-                "https://ncdn0.infojobs.com.br/logos/Company_Evaluation/197760.jpg",
-                -21.2614453,
-                -48.4867373,
-                "Farm. Drogaria Vitoria"),
-            _containerCard(
-                "https://tvminas.com/admin/imagens/foto_empresa/070820152207716/foto_principal.jpg",
-                -21.2629508,
-                -48.4938294,
-                "Farm. Drogaria Poupe Já "),
-            _containerCard(
-                "https://www.aciamcdlmariana.com.br/uploads/aciam_2017/entidades/logomarcas/tn/c_200x200_5f2e42e838a9fe1f18ae32ecf65d3c55c7fdc586.jpg",
-                -21.2633702,
-                -485017932,
-                "Farm. Sta Barbara I"),
-            _containerCard(
-                "https://img-anuncio.listamais.com.br/logo-anuncios/504354.png",
-                -21.267467,
-                -48.5003194,
-                "Farm. Farma Nova"),
-            _containerCard(
-                "https://segredosdomundo.r7.com/wp-content/uploads/2020/04/simbolo-da-farmacia-historia-de-onde-surgiu-e-o-significado-2.jpg",
-                -21.2663264,
-                -48.4770238,
-                "Farm. Droga Azul"),
-            _containerCard(
-                "https://leianoticias.com.br/wp-content/uploads/2019/09/whatsapp-image-2019-09-18-at-14-55-06-297x290.jpeg",
-                -21.2623594,
-                -48.4977247,
-                "Farm. Drogaria Total Popular"),
-            _containerCard(
-                "https://image.isu.pub/130419113428-ef3c8c1a48d342339b57e9fbbec9a66e/jpg/page_1.jpg",
-                -21.2619178,
-                -48.4944205,
-                "Farm. Drogaria Total Drogalita"),
-            _containerCard(
-                "https://www.acinpcdl.com.br/wp-content/uploads/2014/12/DROGARIA-AVENIDA.-Copy.png",
-                -21.2680889,
-                -48.4769702,
-                "Farm. Drogaria Avenida"),
-            _containerCard(
-                "https://www.aciamcdlmariana.com.br/uploads/aciam_2017/entidades/logomarcas/tn/c_200x200_5f2e42e838a9fe1f18ae32ecf65d3c55c7fdc586.jpg",
-                -21.2643264,
-                -48.5020214,
-                "Farm. Santa Barbara II"),
-            _containerCard(
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRVqtb9U8otrxR60b2DN8nGYjyPWFVWGxTaPw&usqp=CAU",
-                -21.2623654,
-                -48.4958713,
-                "Farm. Droga Serve"),
-            _containerCard(
-                "https://segredosdomundo.r7.com/wp-content/uploads/2020/04/simbolo-da-farmacia-historia-de-onde-surgiu-e-o-significado-2.jpg",
-                -21.261892,
-                -48.4886577,
-                "Farm. Farmativa"),
-            _containerCard(
-                "https://segredosdomundo.r7.com/wp-content/uploads/2020/04/simbolo-da-farmacia-historia-de-onde-surgiu-e-o-significado-2.jpg",
-                -21.2677295,
-                -48.4765871,
-                "Farm. Droga Med"),
-            _containerCard(
-                "https://segredosdomundo.r7.com/wp-content/uploads/2020/04/simbolo-da-farmacia-historia-de-onde-surgiu-e-o-significado-2.jpg",
-                -21.2661626,
-                -48.5006341,
-                "Farm. Drogaria Paraiso"),
-            _containerCard(
-                "https://segredosdomundo.r7.com/wp-content/uploads/2020/04/simbolo-da-farmacia-historia-de-onde-surgiu-e-o-significado-2.jpg",
-                -21.2625947,
-                -48.4971086,
-                "Farm. Farma Center"),
-            _containerCard(
-                "https://acianf.com.br/images/empresas/perfil/drogaria-sao-jose_5ecd4e562e99d.crop.jpg",
-                -21.2538074,
-                -48.5085604,
-                "Farm. Drogaria São José"),
-            _containerCard(
-                "https://i.ytimg.com/vi/F58kWUA6px4/maxresdefault.jpg",
-                -21.2623466,
-                -48.4951469,
-                "Farm. Rede Bem"),
-            _containerCard(
-                "https://pbs.twimg.com/profile_images/1258364100972883973/gGcA20Y2_400x400.jpg",
-                -21.263051,
-                -48.5002877,
-                "Farm. Drogal"),
-            _containerCard(
-                "https://guiadafarmacia.com.br/wp-content/uploads/2017/12/droga-raia.jpg",
-                -21.2631062,
-                -48.4987012,
-                "Farm. Droga Raia"),
-            _containerCard(
-                "https://adccta.com/wp-content/uploads/2018/11/farma-conde-site.jpg",
-                -21.2629671,
-                -48.5001101,
-                "Farm. Farma Conde"),
-          ],
-        ),
+        child: _boxesStream(),
       ),
     );
   }
 
-  Widget _boxes(String _image, double lat, double lng, String restaurantName) {
-    return GestureDetector(
-      onTap: () {
-        _gotoLocation(lat, lng);
-        launch("https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+  Widget _boxesStream() {
+    return StreamBuilder(
+      stream: snapshots,
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<QuerySnapshot> snapshot,
+      ) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Erro: ${snapshot.error}'),
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        if (snapshot.data.docs.length == 0) {
+          return Center(
+            child: Text('Não há nenhum local cadastrado no momento'),
+          );
+        }
+
+        return ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: snapshot.data.docs.length,
+          itemBuilder: (BuildContext context, int i) {
+            var doc = snapshot.data.docs[i];
+            var item = doc.data();
+            var lat = item['lat'];
+            var lng = item['lng'];
+
+            //***BOXES DE CARDS AQUI****** */
+            return Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: GestureDetector(
+                onTap: () {
+                  _gotoLocation(item['lat'], item['lng']);
+                  launch(
+                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                },
+                child: Container(
+                  child: new FittedBox(
+                    child: Material(
+                        color: Colors.white,
+                        elevation: 14.0,
+                        borderRadius: BorderRadius.circular(24.0),
+                        shadowColor: Colors.amber,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                              width: 180,
+                              height: 200,
+                              child: ClipRRect(
+                                borderRadius: new BorderRadius.circular(24.0),
+                                child: Image(
+                                  fit: BoxFit.fill,
+                                  image: NetworkImage(item['url'] ?? 
+                                  urlReserva),
+                                  loadingBuilder: (context, child, progress) {
+                                    return progress == null
+                                        ? child
+                                        : CircularProgressIndicator(
+                                            backgroundColor: Colors.blue,
+                                          );
+                                  },
+                                ),
+                              ),
+                            ),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: myDetailsContainer1(item['name']),
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
+                ),
+              ),
+            );
+          },
+        );
       },
-      child: Container(
-        child: new FittedBox(
-          child: Material(
-              color: Colors.white,
-              elevation: 14.0,
-              borderRadius: BorderRadius.circular(24.0),
-              shadowColor: Colors.red,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    width: 180,
-                    height: 200,
-                    child: ClipRRect(
-                      borderRadius: new BorderRadius.circular(24.0),
-                      child: Image(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(_image),
-                        loadingBuilder: (context, child, progress) {
-                          return progress == null
-                              ? child
-                              : CircularProgressIndicator(
-                                  backgroundColor: Colors.blue,
-                                );
-                        },
-                      ),
-                    ),
-                  ),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: myDetailsContainer1(restaurantName),
-                    ),
-                  ),
-                ],
-              )),
-        ),
-      ),
     );
   }
 
@@ -396,7 +324,7 @@ class MapaFarmaciaState extends State<MapaFarmacia> {
           children: <Widget>[
             Container(
                 child: Text(
-              "5.0",
+              '',
               style: TextStyle(
                 color: Colors.black54,
                 fontSize: 18.0,
