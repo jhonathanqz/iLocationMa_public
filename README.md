@@ -1,16 +1,28 @@
-# ilocationma
+<br>
+<center>
+<p align="center">
+  <h1> iLocationMA 📍</h1>
+</p></center>
 
-A new Flutter application.
+## 👁‍🗨 Tecnologias
 
-## Getting Started
+Esse projeto foi desenvolvido com as seguintes tecnologias:
 
-This project is a starting point for a Flutter application.
+- [Flutter](https://flutter.dev/)
+- [Dart](https://dart.dev/)
 
-A few resources to get you started if this is your first Flutter project:
+## 💻 Projeto
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+O projeto iLocationMa, consiste em um aplicativo para listar pontos turísticos da cidade de Monte Alto - SP e passar informações sobre. Capaz de mostrar fotos dos lugares, informações e traçar rotas até o local desejado.
+<br><br>
+iLocationMa foi inicialmente um projeto para conclusão de concurso da Universidade. Atualmente o projeto está em standBy, porém a intenção é finalizar o aplicativo, otimizar da melhor maneira possível, conversar com os setores responsáveis da cidade e tornar o aplicativo público para que todos possam fazer uso.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## ▶️ Como executar
+
+- Clone o repositório
+- Abra o terminal no diretório do projeto e execute `flutter pub get`
+- Inicie seu app com `flutter run`
+
+---
+<br>
+Este projeto foi desenvolvido para conclusão de trabalho de curso.
