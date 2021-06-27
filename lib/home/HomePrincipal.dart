@@ -41,22 +41,19 @@ class HomePrincipal extends StatefulWidget {
 }
 
 class _HomePrincipalState extends State<HomePrincipal> {
-
-
   var connected;
 
   FirebaseAuth auth = FirebaseAuth.instance;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  
-  _checkInternetConnection() async{
+  _checkInternetConnection() async {
     var result = await Connectivity().checkConnectivity();
-    if(result == ConnectivityResult.none){
-      connected='2';
-    }else if (result == ConnectivityResult.mobile){
-      connected='1';
-    }else if(result == ConnectivityResult.wifi){
-      connected='1';
+    if (result == ConnectivityResult.none) {
+      connected = '2';
+    } else if (result == ConnectivityResult.mobile) {
+      connected = '1';
+    } else if (result == ConnectivityResult.wifi) {
+      connected = '1';
     }
   }
 
@@ -139,12 +136,30 @@ class _HomePrincipalState extends State<HomePrincipal> {
               Padding(
                 padding: EdgeInsets.only(left: 40.0),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text('      Seu guia virtual!',
                         style: TextStyle(
                             fontFamily: 'Montserrat',
                             color: Colors.white,
-                            fontSize: 20.0))
+                            fontSize: 20.0)),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 15),
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  MySobreCidade())),
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage('assets/mont3.png'))),
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -156,9 +171,8 @@ class _HomePrincipalState extends State<HomePrincipal> {
                 color: Colors.white,
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(75.0)),
               ),
-              child: ListView(
-                primary: false,
-                padding: EdgeInsets.only(left: 25.0, right: 20.0),
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
                 children: <Widget>[
                   Padding(
                       padding: EdgeInsets.only(top: 45.0),
@@ -322,19 +336,20 @@ class _HomePrincipalState extends State<HomePrincipal> {
     );
   }
 
-  Widget _buildHomeItem(String imgPath, String nameController, _controller, {connectivityResult}) {
+  Widget _buildHomeItem(String imgPath, String nameController, _controller,
+      {connectivityResult}) {
     return Padding(
       padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0, bottom: 10),
       child: InkWell(
         onTap: () {
           _checkInternetConnection();
-          if(connected=='1'){
+          if (connected == '1') {
             Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => _controller));
-          }if(connected=='2'){
+                .push(MaterialPageRoute(builder: (context) => _controller));
+          }
+          if (connected == '2') {
             alertConnection();
           }
-          
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -368,27 +383,30 @@ class _HomePrincipalState extends State<HomePrincipal> {
                 color: Colors.black,
                 onPressed: () {
                   _checkInternetConnection();
-                  if(connected=='1'){
+                  if (connected == '1') {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => _controller));
-                  }if(connected=='2'){
+                        MaterialPageRoute(builder: (context) => _controller));
+                  }
+                  if (connected == '2') {
                     alertConnection();
                   }
-                  
                 }),
           ],
         ),
       ),
     );
   }
+
   void alertConnection() {
-    showPlatformDialog(context: context, 
-    builder: (context) => PlatformAlertDialog(
-      title: 'Conexão de rede',
-      content: Text('Por favor verifique sua conexão com a internet antes de prosseguir.'),
-      actions: [
-        destructiveAction('Voltar'),
-      ],
-    ));
+    showPlatformDialog(
+        context: context,
+        builder: (context) => PlatformAlertDialog(
+              title: 'Conexão de rede',
+              content: Text(
+                  'Por favor verifique sua conexão com a internet antes de prosseguir.'),
+              actions: [
+                destructiveAction('Voltar'),
+              ],
+            ));
   }
 }

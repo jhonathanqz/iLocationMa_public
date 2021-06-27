@@ -7,7 +7,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ilocationma/add/add_hospital.dart';
 import 'package:ilocationma/home/HomePrincipal.dart';
 import 'package:ilocationma/home/OpenUtil.dart';
+import 'package:ilocationma/mapas/homemap/cardMapBanco.dart';
+import 'package:ilocationma/mapas/homemap/cardMapHosp.dart';
 import 'package:ilocationma/modelsfunc/user_model.dart';
+import 'package:ilocationma/widgets/global.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -36,7 +39,7 @@ class MapaHospital extends StatefulWidget {
 class MapaHospitalState extends State<MapaHospital> {
 
   //Firebase para os Boxes
-  var snapshots = FirebaseFirestore.instance.collection('markershosp').snapshots();
+  var snapshots = FirebaseFirestore.instance.collection(Global.firebaseHospital).snapshots();
 
   var urlReserva = 'https://firebasestorage.googleapis.com/v0/b/ilocationma-76ead.appspot.com/o/icones%2Ficones%20base%2Fhospital1.png?alt=media&token=9ec2f08d-37b6-4f80-be26-1464b73a6c9c';
 
@@ -49,7 +52,7 @@ class MapaHospitalState extends State<MapaHospital> {
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
     var db = FirebaseFirestore.instance;
-    QuerySnapshot resultado = await db.collection("markershosp").get();
+    QuerySnapshot resultado = await db.collection(Global.firebaseHospital).get();
 
     setState(() {
       _markers.clear();
@@ -178,9 +181,9 @@ Widget _boxesStream() {
               padding: EdgeInsets.only(left: 10),
               child: GestureDetector(
                 onTap: () {
-                  _gotoLocation(item['lat'], item['lng']);
-                  launch(
-                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                  _gotoLocation(lat, lng);
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => CardMapHosp()));
                 },
                 child: Container(
                   child: new FittedBox(
@@ -203,9 +206,15 @@ Widget _boxesStream() {
                                   loadingBuilder: (context, child, progress) {
                                     return progress == null
                                         ? child
-                                        : CircularProgressIndicator(
-                                            backgroundColor: Colors.blue,
-                                          );
+                                        : Center(
+                                          child: Container(
+                                            height: 40,
+                                            width: 40,
+                                            child: CircularProgressIndicator(
+                                                backgroundColor: Colors.blue,
+                                              ),
+                                          ),
+                                        );
                                   },
                                 ),
                               ),

@@ -6,6 +6,7 @@ import 'package:ilocationma/add/add_bancos.dart';
 
 import 'package:ilocationma/home/HomePrincipal.dart';
 import 'package:ilocationma/home/OpenUtil.dart';
+import 'package:ilocationma/mapas/homemap/cardMapBanco.dart';
 import 'package:ilocationma/modelsfunc/user_model.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -179,9 +180,9 @@ class MapaBancosState extends State<MapaBancos> {
               padding: EdgeInsets.only(left: 10),
               child: GestureDetector(
                 onTap: () {
-                  _gotoLocation(item['lat'], item['lng']);
-                  launch(
-                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                  _gotoLocation(lat, lng);
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => CardMapBanco()));
                 },
                 child: Container(
                   child: new FittedBox(
@@ -199,14 +200,20 @@ class MapaBancosState extends State<MapaBancos> {
                               child: ClipRRect(
                                 borderRadius: new BorderRadius.circular(24.0),
                                 child: Image(
-                                  fit: BoxFit.fill,
+                                  fit: BoxFit.contain,
                                   image: NetworkImage(item['url'] ?? urlReserva),
                                   loadingBuilder: (context, child, progress) {
                                     return progress == null
                                         ? child
-                                        : CircularProgressIndicator(
-                                            backgroundColor: Colors.blue,
-                                          );
+                                        : Center(
+                                          child: Container(
+                                            height: 40,
+                                            width: 40,
+                                            child: CircularProgressIndicator(
+                                                backgroundColor: Colors.blue,
+                                              ),
+                                          ),
+                                        );
                                   },
                                 ),
                               ),

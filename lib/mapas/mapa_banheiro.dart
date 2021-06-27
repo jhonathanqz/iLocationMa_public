@@ -9,7 +9,10 @@ import 'package:ilocationma/add/add_banheiro.dart';
 import 'package:ilocationma/home/HomePrincipal.dart';
 import 'package:ilocationma/home/OpenUtil.dart';
 import 'package:ilocationma/main.dart';
+import 'package:ilocationma/mapas/homemap/cardMapBanco.dart';
+import 'package:ilocationma/mapas/homemap/cardMapBanh.dart';
 import 'package:ilocationma/modelsfunc/user_model.dart';
+import 'package:ilocationma/widgets/global.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -36,7 +39,7 @@ class MapaBanheiro extends StatefulWidget {
 
 class MapaBanheiroState extends State<MapaBanheiro> {
   //Firebase para os Boxes
-  var snapshots = FirebaseFirestore.instance.collection('markersbanh').snapshots();
+  var snapshots = FirebaseFirestore.instance.collection(Global.firebaseBanheiro).snapshots();
 
   var urlReserva = 'https://firebasestorage.googleapis.com/v0/b/ilocationma-76ead.appspot.com/o/icones%2Ficones%20base%2Fbanheiro1.png?alt=media&token=76e540ad-70b0-468c-bd52-14fc1e63d8d1';
 
@@ -51,7 +54,7 @@ class MapaBanheiroState extends State<MapaBanheiro> {
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
     var db = FirebaseFirestore.instance;
-    QuerySnapshot resultado = await db.collection("markersbanh").get();
+    QuerySnapshot resultado = await db.collection(Global.firebaseBanheiro).get();
 
     setState(() {
       _markers.clear();
@@ -183,9 +186,9 @@ class MapaBanheiroState extends State<MapaBanheiro> {
               padding: EdgeInsets.only(left: 10),
               child: GestureDetector(
                 onTap: () {
-                  _gotoLocation(item['lat'], item['lng']);
-                  launch(
-                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                  _gotoLocation(lat, lng);
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => CardMapBanh()));
                 },
                 child: Container(
                   child: new FittedBox(
@@ -208,9 +211,15 @@ class MapaBanheiroState extends State<MapaBanheiro> {
                                   loadingBuilder: (context, child, progress) {
                                     return progress == null
                                         ? child
-                                        : CircularProgressIndicator(
-                                            backgroundColor: Colors.blue,
-                                          );
+                                        : Center(
+                                          child: Container(
+                                            height: 40,
+                                            width: 40,
+                                            child: CircularProgressIndicator(
+                                                backgroundColor: Colors.blue,
+                                              ),
+                                          ),
+                                        );
                                   },
                                 ),
                               ),

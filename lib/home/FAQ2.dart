@@ -236,13 +236,14 @@ class _FAQ2State extends State<FAQ2> {
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 10, bottom: 10),
-                        height: 500,
-                        width: 300,
-                        child: PageView(
-                          children: <Widget>[
-                            _img("assets/Logo_black.png"),
-                          ],
-                        ),
+                        height: 250,
+                        width: 250,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            image: DecorationImage(
+                              image: AssetImage("assets/Logo_black.png")
+                            )
+                          ),
                       ),
                     ],
                   ),

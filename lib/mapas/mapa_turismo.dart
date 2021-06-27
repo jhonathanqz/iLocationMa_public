@@ -6,7 +6,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ilocationma/add/add_turismo.dart';
 import 'package:ilocationma/home/OpenUtil.dart';
+import 'package:ilocationma/mapas/homemap/cardMapBanco.dart';
+import 'package:ilocationma/mapas/homemap/cardMapTurLoc.dart';
 import 'package:ilocationma/modelsfunc/user_model.dart';
+import 'package:ilocationma/widgets/global.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../main.dart';
@@ -35,7 +38,7 @@ class MapaTurismo extends StatefulWidget {
 class MapaTurismoState extends State<MapaTurismo> {
 
   //Firebase para os Boxes
-  var snapshots = FirebaseFirestore.instance.collection('markerstur').snapshots();
+  var snapshots = FirebaseFirestore.instance.collection(Global.firebaseTurLoc).snapshots();
 
   var urlReserva = 'https://firebasestorage.googleapis.com/v0/b/ilocationma-76ead.appspot.com/o/icones%2Ficones%20base%2Fturismo3.png?alt=media&token=a0c97b08-b5ed-4d66-97a4-9a355a8a6b8a';
 
@@ -49,7 +52,7 @@ class MapaTurismoState extends State<MapaTurismo> {
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
     var db = FirebaseFirestore.instance;
-    QuerySnapshot resultado = await db.collection("markerstur").get();
+    QuerySnapshot resultado = await db.collection(Global.firebaseTurLoc).get();
 
     setState(() {
       _markers.clear();
@@ -182,9 +185,9 @@ class MapaTurismoState extends State<MapaTurismo> {
               padding: EdgeInsets.only(left: 10),
               child: GestureDetector(
                 onTap: () {
-                  _gotoLocation(item['lat'], item['lng']);
-                  launch(
-                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                 _gotoLocation(lat, lng);
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => CardMapTurLoc()));
                 },
                 child: Container(
                   child: new FittedBox(
@@ -207,9 +210,15 @@ class MapaTurismoState extends State<MapaTurismo> {
                                   loadingBuilder: (context, child, progress) {
                                     return progress == null
                                         ? child
-                                        : CircularProgressIndicator(
-                                            backgroundColor: Colors.blue,
-                                          );
+                                        : Center(
+                                          child: Container(
+                                            height: 40,
+                                            width: 40,
+                                            child: CircularProgressIndicator(
+                                                backgroundColor: Colors.blue,
+                                              ),
+                                          ),
+                                        );
                                   },
                                 ),
                               ),

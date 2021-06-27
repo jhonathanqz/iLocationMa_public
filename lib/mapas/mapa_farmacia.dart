@@ -8,7 +8,10 @@ import 'package:ilocationma/add/add_farmacia.dart';
 import 'package:ilocationma/home/HomePrincipal.dart';
 import 'package:ilocationma/home/OpenUtil.dart';
 import 'package:ilocationma/main.dart';
+import 'package:ilocationma/mapas/homemap/cardMapBanco.dart';
+import 'package:ilocationma/mapas/homemap/cardMapFarm.dart';
 import 'package:ilocationma/modelsfunc/user_model.dart';
+import 'package:ilocationma/widgets/global.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -35,7 +38,7 @@ class MapaFarmacia extends StatefulWidget {
 
 class MapaFarmaciaState extends State<MapaFarmacia> {
   //Firebase para os boxes
-  var snapshots = FirebaseFirestore.instance.collection('markersfarm').snapshots();
+  var snapshots = FirebaseFirestore.instance.collection(Global.firebaseFarmacia).snapshots();
 
   var urlReserva = 'https://firebasestorage.googleapis.com/v0/b/ilocationma-76ead.appspot.com/o/icones%2Ficones%20base%2Ffarmacia1.png?alt=media&token=fc5ee10c-eb68-4735-9c62-2715aa1ff27b';
 
@@ -49,7 +52,7 @@ class MapaFarmaciaState extends State<MapaFarmacia> {
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
     var db = FirebaseFirestore.instance;
-    QuerySnapshot resultado = await db.collection("markersfarm").get();
+    QuerySnapshot resultado = await db.collection(Global.firebaseFarmacia).get();
 
     setState(() {
       _markers.clear();
@@ -240,9 +243,9 @@ class MapaFarmaciaState extends State<MapaFarmacia> {
               padding: EdgeInsets.only(left: 10),
               child: GestureDetector(
                 onTap: () {
-                  _gotoLocation(item['lat'], item['lng']);
-                  launch(
-                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng");
+                  _gotoLocation(lat, lng);
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => CardMapFarm()));
                 },
                 child: Container(
                   child: new FittedBox(
@@ -266,9 +269,15 @@ class MapaFarmaciaState extends State<MapaFarmacia> {
                                   loadingBuilder: (context, child, progress) {
                                     return progress == null
                                         ? child
-                                        : CircularProgressIndicator(
-                                            backgroundColor: Colors.blue,
-                                          );
+                                        : Center(
+                                          child: Container(
+                                            height: 40,
+                                            width: 40,
+                                            child: CircularProgressIndicator(
+                                                backgroundColor: Colors.blue,
+                                              ),
+                                          ),
+                                        );
                                   },
                                 ),
                               ),

@@ -128,10 +128,11 @@ class _SobreCidadeState extends State<SobreCidade> {
                           margin: EdgeInsets.only(top: 50, bottom: 50),
                           height: 500,
                           width: 300,
-                          child: PageView(
-                            children: <Widget>[
-                              _img("assets/mont2.jpg"),
-                            ],
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            image: DecorationImage(
+                              image: AssetImage("assets/mont2.jpg")
+                            )
                           ),
                         ),
                       ),

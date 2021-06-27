@@ -128,14 +128,14 @@ class _SobreAppState extends State<SobreApp> {
                         ),
                       ),
                       Container(
-                        margin: EdgeInsets.only(top: 10, bottom: 10),
-                        height: 500,
+                        height: 300,
                         width: 300,
-                        child: PageView(
-                          children: <Widget>[
-                            _img("assets/Logo_black.png"),
-                          ],
-                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            image: DecorationImage(
+                              image: AssetImage("assets/Logo_black.png")
+                            )
+                          ),
                       ),
                     ],
                   ),

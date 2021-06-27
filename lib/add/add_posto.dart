@@ -8,6 +8,7 @@ import 'package:ilocationma/mapas/mapa_bancos.dart';
 import 'package:ilocationma/mapas/mapa_posto.dart';
 import 'package:ilocationma/model/AddPaginas.dart';
 import 'package:ilocationma/modelsfunc/user_model.dart';
+import 'package:ilocationma/widgets/global.dart';
 import 'package:ilocationma/widgets/platform_alert_dialog.dart';
 import 'package:ilocationma/widgets/platform_dialog_button_action.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -69,7 +70,7 @@ class _AddPostoState extends State<AddPosto> {
 
   _cadastrarLoc(AddPaginas loc) {
     var db = FirebaseFirestore.instance;
-    db.collection("markersAddPosto").add({
+    db.collection(Global.firebaseAddPosto).add({
       "nome": loc.nome,
       "local": loc.local,
       "end": loc.end,
