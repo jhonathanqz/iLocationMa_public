@@ -17,6 +17,12 @@ O projeto iLocationMa, consiste em um aplicativo para listar pontos turísticos 
 <br><br>
 iLocationMa foi inicialmente um projeto para conclusão de concurso da Universidade. Atualmente o projeto está em standBy, porém a intenção é finalizar o aplicativo, otimizar da melhor maneira possível, conversar com os setores responsáveis da cidade e tornar o aplicativo público para que todos possam fazer uso.
 
+## 📱 Screenshots
+<div>
+  <img src="https://github.com/jhonathanqz/iLocationMa_public/blob/master/screenshots/home1.jpg" width="600px" style="max-width:100%;" alt="imagem do projeto">
+  <img src="https://github.com/jhonathanqz/iLocationMa_public/blob/master/screenshots/home2.jpg" width="600px" style="max-width:100%;" alt="imagem do projeto">
+</div>
+
 ## ▶️ Como executar
 
 - Clone o repositório
